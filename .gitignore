@@ -1,0 +1,5 @@
+api/node_modules
+web-client/node_modules
+web-client/.angular
+web-client/.vscode
+.idea

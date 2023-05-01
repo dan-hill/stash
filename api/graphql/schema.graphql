@@ -1,0 +1,67 @@
+type Query {
+  thing(id: ID!): Thing
+  things: [Thing]
+}
+
+type Mutation {
+  createThing(input: ThingInput!): Thing!
+  updateThing(id: ID!, input: ThingInput!): Thing!
+  deleteThing(id: ID!): Thing!
+}
+
+input ThingInput {
+  name: String!
+  summary: String
+  category: String
+  subcategory: String
+  user: String
+  attributes: [AttributeInput]
+  sources: [SourceInput]
+  instances: [InstanceInput]
+}
+
+type Thing {
+  id: ID!
+  name: String!
+  summary: String
+  category: String
+  subcategory: String
+  user: String
+  attributes: [Attribute]
+  sources: [Source]
+  instances: [Instance]
+}
+
+type Attribute {
+  key: String
+  value: String
+}
+
+input AttributeInput {
+  key: String
+  value: String
+}
+
+type Source {
+  name: String
+  url: String
+  price: Float
+}
+
+input SourceInput {
+  name: String
+  url: String
+  price: Float
+}
+
+type Instance {
+  thing: Thing
+  base_quantity: Int
+  quantity: Int
+}
+
+input InstanceInput {
+  thing: ID
+  base_quantity: Int
+  quantity: Int
+}
