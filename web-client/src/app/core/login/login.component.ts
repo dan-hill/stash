@@ -37,11 +37,10 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
-
     if (this.authService.isAuthenticated()) {
       const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-      this.router.navigateByUrl(returnUrl);     }
+      this.router.navigateByUrl(returnUrl);
+    }
   }
 
   onSubmit() {
@@ -54,6 +53,11 @@ export class LoginComponent implements OnInit {
           console.log(data);
           this.storage.setAccessToken(data.access_token);
           this.storage.setRefreshToken(data.refresh_token);
+
+          if (this.authService.isAuthenticated()) {
+            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+            this.router.navigateByUrl(returnUrl);
+          }
 
           // this.userService.get().subscribe({
           //   next: (data: any) => {

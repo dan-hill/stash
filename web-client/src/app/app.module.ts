@@ -23,6 +23,8 @@ import {NzCheckboxModule} from "ng-zorro-antd/checkbox";
 import {NzButtonModule} from "ng-zorro-antd/button";
 import {NzBreadCrumbModule} from "ng-zorro-antd/breadcrumb";
 import {NzTreeModule} from "ng-zorro-antd/tree";
+import {ThingComponent} from "./core/thing/thing.component";
+import { KtdGridModule } from '@katoid/angular-grid-layout';
 
 registerLocaleData(en);
 
@@ -30,7 +32,8 @@ registerLocaleData(en);
   declarations: [
     AppComponent,
     LoginComponent,
-    StashComponent
+    StashComponent,
+    ThingComponent
   ],
   imports: [
     BrowserModule,
@@ -50,6 +53,7 @@ registerLocaleData(en);
     ReactiveFormsModule,
     NzBreadCrumbModule,
     NzTreeModule,
+    KtdGridModule
   ],
   providers: [
     { provide: NZ_I18N, useValue: en_US }

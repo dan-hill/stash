@@ -3,6 +3,7 @@ import {StashService} from "../../services/stash/stash.service";
 import {Thing} from "../../models/thing/thing.model";
 import _ from "lodash";
 import {NzFormatEmitEvent} from "ng-zorro-antd/tree";
+import {Router} from "@angular/router";
 @Component({
   selector: 'app-stash',
   templateUrl: './stash.component.html',
@@ -11,7 +12,10 @@ import {NzFormatEmitEvent} from "ng-zorro-antd/tree";
 export class StashComponent implements OnInit {
   private things: Thing[] = [];
   public nodes: any[] = [];
-  constructor(private stash: StashService) { }
+  constructor(
+    private stash: StashService,
+    private router: Router,
+  ) { }
 
   ngOnInit() {
     this.stash.getThings().subscribe((data: any) => {
@@ -27,6 +31,11 @@ export class StashComponent implements OnInit {
   }
 
   nzEvent(event: NzFormatEmitEvent): void {
-    console.log(event);
+    if(event.keys) {
+      const id = event.keys[0];
+      this.router.navigateByUrl(`/stash/${id}`);
+    }
   }
+
+
 }

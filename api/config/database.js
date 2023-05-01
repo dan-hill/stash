@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const MONGO_URI = 'mongodb://localhost:27017/horde';
+const MONGO_URI = 'mongodb://localhost:27017/stash';
 const MONGO_CONFIG = {
     useNewUrlParser: true,
     useUnifiedTopology: true
