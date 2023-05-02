@@ -25,7 +25,7 @@ export class StashComponent implements OnInit {
         .map((category: any) => {
           return { title: category, key: category, expanded: false, children: this.things
               .filter((entity: any) => entity.category === category)
-              .map((thing: any) => {return {title: thing.name, key: thing.id, isLeaf: true}}) }
+              .map((thing: any) => {return {title: thing.name, key: thing._id, isLeaf: true}}) }
       }).value();
     });
   }

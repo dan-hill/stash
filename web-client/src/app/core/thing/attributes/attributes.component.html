@@ -1,23 +1,34 @@
-<nz-table #editRowTable nzBordered [nzData]="attributes">
-  <thead>
-  <tr>
-    <th nzWidth="30%">Name</th>
-    <th>Age</th>
-    <th>Address</th>
-    <th>Action</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr *ngFor="let data of editRowTable.data" class="editable-row">
-    <td>
-      <div class="editable-cell" [hidden]="editId === data.key" (click)="startEdit(data.key)">
-        {{ data.key }}
-      </div>
-      <input [hidden]="editId !== data.value" type="text" nz-input [(ngModel)]="data.value" (blur)="stopEdit()" />
-    </td>
-    <td>
-      <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.key)">Delete</a>
-    </td>
-  </tr>
-  </tbody>
-</nz-table>
+<nz-card nzTitle="Attributes" [nzExtra]="extraTemplate">
+  <nz-table class="attribute-table" #editRowTable [nzData]="attributes" [nzSize]="'small'">
+    <thead>
+    <tr style="display: none">
+      <th nzLeft></th>
+
+      <th nzRight nzWidth="150px"></th>
+      <th nzRight nzWidth="30px" ></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of editRowTable.data" class="editable-row">
+      <td>
+        <div class="editable-cell" [hidden]="editId === data.key" (click)="startEdit(data.key)">
+          {{ data.key }}
+        </div>
+        <input [hidden]="editId !== data.key" type="text" nz-input [(ngModel)]="data.key" (blur)="stopEdit()" />
+      </td>
+      <td>
+        <div class="editable-cell" [hidden]="editId === data.value" (click)="startEdit(data.value)">
+          {{ data.value }}
+        </div>
+        <input [hidden]="editId !== data.value" type="text" nz-input [(ngModel)]="data.value" (blur)="stopEdit()" />
+      </td>
+      <td>
+        <button nz-button nzType="primary" nzDanger [nzSize]="'small'" nzShape="circle" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.key)"><span nz-icon nzType="delete" nzTheme="outline"></span></button>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</nz-card>
+<ng-template #extraTemplate>
+  <a>More</a>
+</ng-template>

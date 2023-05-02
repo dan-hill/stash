@@ -1,12 +1,7 @@
 import mongoose from 'mongoose';
-import * as uuid from "uuid";
 
-
-const entitySchema = new mongoose.Schema({
-    _id: {
-        type: String,
-        default: uuid.v4
-    },
+const ThingSchema = new mongoose.Schema({
+    _id: mongoose.Types.ObjectId,
     name: {
         type: String,
         default: '',
@@ -44,4 +39,4 @@ const entitySchema = new mongoose.Schema({
     }],
 });
 
-export const Thing = mongoose.model('Thing', entitySchema);
+export const Thing = mongoose.model('Thing', ThingSchema);

@@ -1,9 +1,15 @@
+import * as uuid from "uuid";
+import mongoose from "mongoose";
+
 const resolvers = {
     Query: {
         thing: async (parent, args, context, info) => {
             const { Thing } = context;
             const { id } = args;
-            const thing = await Thing.findById(id);
+            console.log(id);
+            const objectId = new mongoose.Types.ObjectId(id);
+            const thing = await Thing.findById(objectId);
+            console.log(thing);
             return thing;
         },
         things: async (parent, args, context, info) => {

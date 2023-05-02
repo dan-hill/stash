@@ -5,7 +5,7 @@ import {Attribute} from "../attribute/attribute.model";
 
 export class Thing implements Deserializable{
   constructor(
-    public id: string = '',
+    public _id: string = '',
     public name: string = '',
     public summary: string = '',
     public category: string = '',

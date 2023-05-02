@@ -21,7 +21,7 @@ input ThingInput {
 }
 
 type Thing {
-  id: ID!
+  _id: ID!
   name: String!
   summary: String
   category: String
