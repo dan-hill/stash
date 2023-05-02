@@ -25,6 +25,9 @@ import {NzBreadCrumbModule} from "ng-zorro-antd/breadcrumb";
 import {NzTreeModule} from "ng-zorro-antd/tree";
 import {ThingComponent} from "./core/thing/thing.component";
 import { KtdGridModule } from '@katoid/angular-grid-layout';
+import {AttributesComponent} from "./core/thing/attributes/attributes.component";
+import {NzTableModule} from "ng-zorro-antd/table";
+import {NzPopconfirmModule} from "ng-zorro-antd/popconfirm";
 
 registerLocaleData(en);
 
@@ -33,7 +36,8 @@ registerLocaleData(en);
     AppComponent,
     LoginComponent,
     StashComponent,
-    ThingComponent
+    ThingComponent,
+    AttributesComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +57,9 @@ registerLocaleData(en);
     ReactiveFormsModule,
     NzBreadCrumbModule,
     NzTreeModule,
-    KtdGridModule
+    KtdGridModule,
+    NzTableModule,
+    NzPopconfirmModule
   ],
   providers: [
     { provide: NZ_I18N, useValue: en_US }

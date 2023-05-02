@@ -8,10 +8,10 @@ import {Apollo, APOLLO_OPTIONS} from "apollo-angular";
 export class StashService {
   constructor(private apollo: Apollo) {}
 
-  getThing(id: string) {
+  getThing(thingId: string) {
     const query = gql`
-      query GetThing($id: ID!) {
-        thing(id: $id) {
+      query Query($thingId: ID!) {
+        thing(id: $thingId) {
           id
           name
           summary
@@ -29,8 +29,8 @@ export class StashService {
           }
           instances {
             thing {
-              id
               name
+              id
             }
             base_quantity
             quantity
@@ -41,7 +41,7 @@ export class StashService {
 
     return this.apollo.watchQuery<{ thing: any }>({
       query,
-      variables: { id },
+      variables: { thingId },
     }).valueChanges;
   }
 
