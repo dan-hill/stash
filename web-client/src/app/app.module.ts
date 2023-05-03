@@ -30,6 +30,7 @@ import {NzTableModule} from "ng-zorro-antd/table";
 import {NzPopconfirmModule} from "ng-zorro-antd/popconfirm";
 import {SourcesComponent} from "./core/thing/sources/sources.component";
 import {InstancesComponent} from "./core/thing/instances/instances.component";
+import {NzPopoverModule} from "ng-zorro-antd/popover";
 
 registerLocaleData(en);
 
@@ -43,28 +44,29 @@ registerLocaleData(en);
     SourcesComponent,
     InstancesComponent
   ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    AppRoutingModule,
-    IconsProviderModule,
-    NzLayoutModule,
-    NzMenuModule,
-    GraphQLModule,
-    NzCardModule,
-    NzFormModule,
-    NzInputModule,
-    NzCheckboxModule,
-    NzButtonModule,
-    ReactiveFormsModule,
-    NzBreadCrumbModule,
-    NzTreeModule,
-    KtdGridModule,
-    NzTableModule,
-    NzPopconfirmModule
-  ],
+    imports: [
+        BrowserModule,
+        FormsModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+        AppRoutingModule,
+        IconsProviderModule,
+        NzLayoutModule,
+        NzMenuModule,
+        GraphQLModule,
+        NzCardModule,
+        NzFormModule,
+        NzInputModule,
+        NzCheckboxModule,
+        NzButtonModule,
+        ReactiveFormsModule,
+        NzBreadCrumbModule,
+        NzTreeModule,
+        KtdGridModule,
+        NzTableModule,
+        NzPopconfirmModule,
+        NzPopoverModule
+    ],
   providers: [
     { provide: NZ_I18N, useValue: en_US }
   ],
