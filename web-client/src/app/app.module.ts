@@ -28,6 +28,8 @@ import { KtdGridModule } from '@katoid/angular-grid-layout';
 import {AttributesComponent} from "./core/thing/attributes/attributes.component";
 import {NzTableModule} from "ng-zorro-antd/table";
 import {NzPopconfirmModule} from "ng-zorro-antd/popconfirm";
+import {SourcesComponent} from "./core/thing/sources/sources.component";
+import {InstancesComponent} from "./core/thing/instances/instances.component";
 
 registerLocaleData(en);
 
@@ -37,7 +39,9 @@ registerLocaleData(en);
     LoginComponent,
     StashComponent,
     ThingComponent,
-    AttributesComponent
+    AttributesComponent,
+    SourcesComponent,
+    InstancesComponent
   ],
   imports: [
     BrowserModule,

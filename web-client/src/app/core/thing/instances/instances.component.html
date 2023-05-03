@@ -1,0 +1,29 @@
+<nz-card nzTitle="Instances" [nzExtra]="extraTemplate">
+  <nz-table class="attribute-table" #editRowTable [nzData]="instances" [nzSize]="'small'">
+    <thead>
+    <tr style="display: none">
+      <th nzLeft></th>
+
+      <th nzRight nzWidth="150px"></th>
+      <th nzRight nzWidth="30px" ></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of editRowTable.data" class="editable-row">
+      <td>
+        <div class="editable-cell" [hidden]="editId === data._id" (click)="startEdit(data._id)">
+          {{ data.thing.name }}
+        </div>
+        <input [hidden]="editId !== data._id" type="text" nz-input [(ngModel)]="data.thing.name" (blur)="stopEdit()" />
+      </td>
+
+      <td>
+        <button nz-button nzType="primary" nzDanger [nzSize]="'small'" nzShape="circle" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data._id)"><span nz-icon nzType="delete" nzTheme="outline"></span></button>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</nz-card>
+<ng-template #extraTemplate>
+  <a>More</a>
+</ng-template>

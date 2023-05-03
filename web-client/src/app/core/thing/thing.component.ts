@@ -15,7 +15,7 @@ export class ThingComponent implements OnInit {
   rowHeight: number = 100;
   layout: KtdGridLayout = [
     {id: 'attributes', x: 0, y: 0, w: 3, h: 3},
-    {id: '1', x: 3, y: 0, w: 3, h: 3},
+    {id: 'instances', x: 3, y: 0, w: 3, h: 3},
     {id: '2', x: 0, y: 3, w: 3, h: 3, minW: 2, minH: 3},
     {id: '3', x: 3, y: 3, w: 3, h: 3, minW: 2, maxW: 3, minH: 2, maxH: 5},
   ];

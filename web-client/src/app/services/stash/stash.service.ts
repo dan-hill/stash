@@ -12,31 +12,35 @@ export class StashService {
     const query = gql`
       query Query($id: ID!) {
         thing(id: $id) {
-          _id
-          name
-          summary
-          category
-          subcategory
-          user
-          attributes {
-            key
-            value
-          }
-          sources {
+            _id
             name
-            url
-            price
-          }
-          instances {
-            thing {
-              name
+            summary
+            category
+            subcategory
+            user
+            attributes {
               _id
+              key
+              value
             }
-            base_quantity
-            quantity
+            sources {
+              _id
+              name
+              url
+              price
+            }
+            instances {
+              _id
+              thing {
+                _id
+                name
+              }
+              base_quantity
+              quantity
+            }
           }
         }
-      }
+
     `;
 
     return this.apollo.watchQuery<{ thing: any }>({

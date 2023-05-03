@@ -33,6 +33,7 @@ type Thing {
 }
 
 type Attribute {
+  _id: ID!
   key: String
   value: String
 }
@@ -43,6 +44,7 @@ input AttributeInput {
 }
 
 type Source {
+  _id: ID!
   name: String
   url: String
   price: Float
@@ -55,6 +57,7 @@ input SourceInput {
 }
 
 type Instance {
+  _id: ID!
   thing: Thing
   base_quantity: Int
   quantity: Int

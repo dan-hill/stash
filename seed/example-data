@@ -1,0 +1,44 @@
+use stash
+db.things.insertOne({
+  "name": "Example Thing",
+  "summary": "This is an example thing for testing purposes.",
+  "category": "TestCategory",
+  "subcategory": "TestSubcategory",
+  "user": "TestUser",
+  "attributes": [
+    {
+            "_id": ObjectId(),
+
+      "key": "color",
+      "value": "blue"
+    },
+    {
+            "_id": ObjectId(),
+
+      "key": "size",
+      "value": "medium"
+    }
+  ],
+  "sources": [
+    {
+            "_id": ObjectId(),
+      "name": "ExampleSource1",
+      "url": "https://example-source-1.com",
+      "price": 100
+    },
+    {
+            "_id": ObjectId(),
+      "name": "ExampleSource2",
+      "url": "https://example-source-2.com",
+      "price": 120
+    }
+  ],
+  "instances": [
+    {
+        "_id": ObjectId(),
+      "thing": "60a7c1e98b93d80015e335e2",
+      "base_quantity": 10,
+      "quantity": 5
+    }
+  ]
+})

@@ -2,6 +2,7 @@ import {Deserializable} from "../deserializable/deserializable.model";
 
 export class Source implements Deserializable{
   constructor(
+    public _id: string = '',
     public name: string = '',
     public url: string = '',
     public price: number = 0,
