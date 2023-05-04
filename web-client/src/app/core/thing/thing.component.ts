@@ -23,7 +23,7 @@ export class ThingComponent implements OnInit {
 
   constructor(
     private stash: StashService,
-  private route: ActivatedRoute
+    private route: ActivatedRoute
 ) {
 
   }
@@ -32,7 +32,6 @@ export class ThingComponent implements OnInit {
     this.route.params.subscribe(params => {
       const id = params['id'];
       this.stash.getThing(id).subscribe((query: any) => {
-        console.log(query)
         this.thing = query.data.thing;
       });
     });

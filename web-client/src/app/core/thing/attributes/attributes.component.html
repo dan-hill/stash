@@ -30,26 +30,36 @@
   </nz-table>
 </nz-card>
 <ng-template #extraTemplate>
-  <button nz-button nzType="primary" [nzSize]="'small'" nzShape="circle"  nz-popover (nzPopoverVisibleChange)="change($event)" [(nzPopoverVisible)]="visible" [nzPopoverContent]="contentTemplate"><span nz-icon nzType="file-add" nzTheme="outline"></span></button>
+  <button
+    nz-button nzType="primary"
+    [nzSize]="'small'"
+    nzShape="circle"
+    nz-popover
+    (nzPopoverVisibleChange)="change($event)"
+    [(nzPopoverVisible)]="visible"
+    [nzPopoverContent]="contentTemplate"
+    nzPopoverTrigger="click">
+      <span nz-icon nzType="file-add" nzTheme="outline"></span>
+  </button>
   <ng-template #contentTemplate>
-    <form nz-form [nzLayout]="'inline'" [formGroup]="validateForm" (ngSubmit)="submitForm()">
+    <form nz-form [nzLayout]="'inline'" [formGroup]="validateForm" (ngSubmit)="saveAttribute()">
       <nz-form-item>
         <nz-form-control nzErrorTip="Please input your username!">
           <nz-input-group nzPrefixIcon="user">
-            <input formControlName="userName" nz-input placeholder="Username" />
+            <input formControlName="key" nz-input placeholder="Key" />
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
         <nz-form-control nzErrorTip="Please input your Password!">
           <nz-input-group nzPrefixIcon="lock">
-            <input formControlName="password" nz-input type="password" placeholder="Password" />
+            <input formControlName="value" placeholder="Value" />
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
         <nz-form-control>
-          <button nz-button nzType="primary" [disabled]="!validateForm.valid">Log in</button>
+          <button nz-button nzType="primary" [disabled]="!validateForm.valid" >Save</button>
         </nz-form-control>
       </nz-form-item>
     </form>

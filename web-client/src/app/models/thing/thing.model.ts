@@ -15,7 +15,29 @@ export class Thing implements Deserializable{
     public instances: Instance[] = [],
     public sources: Source[] = [],
   ) {}
-
+  static fromObject(input: {
+    _id: string;
+    name: string;
+    summary: string;
+    category: string;
+    subcategory: string;
+    user: string;
+    attributes: Attribute[];
+    instances: Instance[];
+    sources: Source[];
+  }): Thing {
+    return new Thing(
+      input._id,
+      input.name,
+      input.summary,
+      input.category,
+      input.subcategory,
+      input.user,
+      input.attributes,
+      input.instances,
+      input.sources
+    );
+  }
   deserialize(input: any): this {
     Object.assign(this as Thing, input);
     return this;

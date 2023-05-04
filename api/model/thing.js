@@ -20,26 +20,17 @@ const ThingSchema = new mongoose.Schema({
         type: String
     },
     attributes: [{
-        _id: mongoose.Types.ObjectId,
-        key: String,
-        value: String
+        type: String,
+        ref: 'Source'
     }],
     sources: [{
-        _id: mongoose.Types.ObjectId,
-        name: String,
-        url: String,
-        price: Number,
+        type: String,
+        ref: 'Source'
     }],
     instances: [{
-        _id: mongoose.Types.ObjectId,
-        thing: {
-            type: String,
-            ref: 'Thing'
-        },
-        base_quantity: Number,
-        quantity: Number,
-
-    }],
+        type: String,
+        ref: 'Instance'
+    }]
 });
 
 export const Thing = mongoose.model('Thing', ThingSchema);

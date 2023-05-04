@@ -1,50 +1,33 @@
-import * as uuid from "uuid";
-import mongoose from "mongoose";
+import { Thing } from "../model/thing.js";
+import { Instance } from "../model/instance.js";
+import { Source } from "../model/source.js";
+import { Attribute } from "../model/attribute.js";
 
 const resolvers = {
     Query: {
-        thing: async (parent, args, context, info) => {
-            const { Thing } = context;
-            const { id } = args;
-            console.log(id);
-            const objectId = new mongoose.Types.ObjectId(id);
-            const thing = await Thing.findById(objectId);
-            console.log(thing);
-            return thing;
+        things: async () => {
+           const things = await Thing.find()
+            console.log(things);
+           return things;
         },
-        things: async (parent, args, context, info) => {
-            const { Thing } = context;
-            const things = await Thing.find();
-            return things;
-        }
+        instances: async () => Instance.find(),
+        sources: async () => Source.find(),
+        attributes: async () => Attribute.find()
     },
     Mutation: {
-        createThing: async (parent, args, context, info) => {
-            const { Thing } = context;
-            const { input } = args;
-            const newThing = new Thing(input);
-            await newThing.save();
-            return newThing;
-        },
-        updateThing: async (parent, args, context, info) => {
-            const { Thing } = context;
-            const { id, input } = args;
-            const updatedThing = await Thing.findByIdAndUpdate(id, input, { new: true });
-            return updatedThing;
-        },
-        deleteThing: async (parent, args, context, info) => {
-            const { Thing } = context;
-            const { id } = args;
-            const deletedThing = await Thing.findByIdAndDelete(id);
-            return deletedThing;
-        }
+        createThing: async (_, { input }) => Thing.create(input),
+        createInstance: async (_, { input }) => Instance.create(input),
+        createSource: async (_, { input }) => Source.create(input),
+        createAttribute: async (_, { input }) => Attribute.create(input)
+    },
+    Thing: {
+        attributes: async (parent) => Attribute.find({ _id: { $in: parent.attributes } }),
+        sources: async (parent) => Source.find({ _id: { $in: parent.sources } }),
+        instances: async (parent) => Instance.find({ _id: { $in: parent.instances } }),
     },
     Instance: {
-        thing: async (parent, args, context, info) => {
-            const { Thing } = context;
-            const relatedThing = await Thing.findById(parent.thing);
-            return relatedThing;
-        }
+        thing: async (parent) => Thing.findById(parent.thing)
     }
 };
+
 export default resolvers;

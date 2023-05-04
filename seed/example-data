@@ -1,44 +1,33 @@
-use stash
+use stash;
+
 db.things.insertOne({
-  "name": "Example Thing",
-  "summary": "This is an example thing for testing purposes.",
-  "category": "TestCategory",
-  "subcategory": "TestSubcategory",
-  "user": "TestUser",
-  "attributes": [
-    {
-            "_id": ObjectId(),
+    _id: ObjectId("60ffe6b78a6e8c6f8c123abc"),
+    name: 'Drill',
+    summary: 'Powerful hand drill',
+    category: 'Tools',
+    subcategory: 'Power Tools',
+    user: 'ca8e9d7a-30fd-49d4-8ca2-fc107bc4e651 ',
+    attributes: [ObjectId("60ffe6b78a6e8c6f8c111aaa")],
+    sources: [ObjectId("60ffe6b78a6e8c6f8c222bbb")],
+    instances: [ObjectId("60ffe6b78a6e8c6f8c333ccc")]
+})
 
-      "key": "color",
-      "value": "blue"
-    },
-    {
-            "_id": ObjectId(),
+db.instances.insertOne({
+    _id: ObjectId("60ffe6b78a6e8c6f8c333ccc"),
+    thing: ObjectId("60ffe6b78a6e8c6f8c123abc"),
+    base_quantity: 1,
+    quantity: 5
+})
 
-      "key": "size",
-      "value": "medium"
-    }
-  ],
-  "sources": [
-    {
-            "_id": ObjectId(),
-      "name": "ExampleSource1",
-      "url": "https://example-source-1.com",
-      "price": 100
-    },
-    {
-            "_id": ObjectId(),
-      "name": "ExampleSource2",
-      "url": "https://example-source-2.com",
-      "price": 120
-    }
-  ],
-  "instances": [
-    {
-        "_id": ObjectId(),
-      "thing": "60a7c1e98b93d80015e335e2",
-      "base_quantity": 10,
-      "quantity": 5
-    }
-  ]
+db.sources.insertOne({
+    _id: ObjectId("60ffe6b78a6e8c6f8c222bbb"),
+    name: 'Amazon',
+    url: 'https://www.amazon.com',
+    price: 100
+})
+
+db.attributes.insertOne({
+    _id: ObjectId("60ffe6b78a6e8c6f8c111aaa"),
+    key: 'Color',
+    value: 'Black'
 })
