@@ -19,7 +19,7 @@ export class StashComponent implements OnInit {
 
   ngOnInit() {
     this.stash.getThings().subscribe((data: any) => {
-      this.things = data.data.things;
+      this.things = data.things;
       this.nodes = _(this.things)
         .map((thing: Thing) => {return thing.category}).uniq()
         .map((category: any) => {

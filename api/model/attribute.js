@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const AttributeSchema = new mongoose.Schema({
-    _id: mongoose.Types.ObjectId,
     key: String,
     value: String
 })

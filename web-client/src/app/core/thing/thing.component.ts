@@ -32,7 +32,7 @@ export class ThingComponent implements OnInit {
     this.route.params.subscribe(params => {
       const id = params['id'];
       this.stash.getThing(id).subscribe((query: any) => {
-        this.thing = query.data.thing;
+        this.thing = query.thing;
       });
     });
   }

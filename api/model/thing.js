@@ -20,17 +20,18 @@ const ThingSchema = new mongoose.Schema({
         type: String
     },
     attributes: [{
-        type: String,
-        ref: 'Source'
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Attribute'
     }],
     sources: [{
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Source'
     }],
     instances: [{
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Instance'
     }]
 });
+
 
 export const Thing = mongoose.model('Thing', ThingSchema);

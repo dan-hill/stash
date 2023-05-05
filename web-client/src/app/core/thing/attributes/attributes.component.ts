@@ -1,11 +1,11 @@
 import {Input, Component, OnInit, SimpleChanges, OnChanges} from '@angular/core';
 import {Attribute} from "../../../models/attribute/attribute.model";
-import ObjectId from 'bson-objectid';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Thing} from "../../../models/thing/thing.model";
 import {StashService} from "../../../services/stash/stash.service";
 import {Instance} from "../../../models/instance/instance.model";
 import {Source} from "../../../models/source/source.model";
+import ObjectID from "bson-objectid";
 @Component({
   selector: 'app-attributes',
   templateUrl: './attributes.component.html',
@@ -55,11 +55,7 @@ export class AttributesComponent implements OnInit {
   }
 
   addAttribute(): void {
-    const id = new ObjectId().toString()
-      this.attributes = [
-        ...this.attributes,
-        new Attribute(id, '', ''),
-      ];
+
   }
 
   clickMe(): void {
@@ -75,33 +71,13 @@ export class AttributesComponent implements OnInit {
   }
 
   saveAttribute() {
-    this.attributes = [
-      ...this.attributes,
-      new Attribute(new ObjectId().toString(), this.validateForm.value.key, this.validateForm.value.value),
-    ];
-    this.attributes = this.attributes.map((attr) => {
-      const { __typename, ...rest } = attr as Partial<Attribute & { __typename?: string }>;
-      return rest as Attribute;
-    });
-    console.log(this.thing);
-    const obj = {
-      ...this.thing,
-      attributes: this.attributes.map(a => this.removeTypename(a) as any),
-      sources: this.thing.sources.map(s => this.removeTypename(s) as any ),
-      instances: this.thing.instances.map(i => {
-        const newInstance = this.removeTypename(i) as any;
-        newInstance.thing = newInstance.thing._id;
-
-        return newInstance;
-       })
-    };
-    console.log(this.thing);
-
-    this.stash.updateThing(obj._id, obj).subscribe({
+    this.stash.createAttribute(this.thing._id, this.validateForm.value).subscribe({
       next: (data: any) => {
+        console.log(data);
+        this.visible = false;
+
       }
     });
-    this.visible = false;
   }
 
   removeTypename<T>(obj: T): Partial<T> {

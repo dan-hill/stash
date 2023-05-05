@@ -1,73 +1,76 @@
+scalar ObjectId
+
 type Thing {
-  _id: ID!
-  name: String!
-  summary: String
-  category: String
-  subcategory: String
-  user: String
-  attributes: [Attribute]
-  sources: [Source]
-  instances: [Instance]
+    _id: ObjectId!
+    name: String
+    summary: String
+    category: String
+    subcategory: String
+    user: String
+    attributes: [Attribute]
+    sources: [Source]
+    instances: [Instance]
 }
 
 type Instance {
-  _id: ID!
-  thing: Thing
-  base_quantity: Int
-  quantity: Int
+    _id: ObjectId!
+    thing: Thing
+    base_quantity: Int
+    quantity: Int
 }
 
 type Source {
-  _id: ID!
-  name: String
-  url: String
-  price: Float
+    _id: ObjectId!
+    name: String
+    url: String
+    price: Float
 }
 
 type Attribute {
-  _id: ID!
-  key: String
-  value: String
+    _id: ObjectId!
+    key: String
+    value: String
 }
 
 type Query {
-  things: [Thing]
-  instances: [Instance]
-  sources: [Source]
-  attributes: [Attribute]
+    thing(_id: ObjectId): Thing
+    things: [Thing]
+    instances: [Instance]
+    sources: [Source]
+    attributes: [Attribute]
 }
 
 input ThingInput {
-  name: String!
-  summary: String
-  category: String
-  subcategory: String
-  user: String
-  attributes: [ID]
-  sources: [ID]
-  instances: [ID]
+    name: String
+    summary: String
+    category: String
+    subcategory: String
+    user: String
+    attributes: [ObjectId]
+    sources: [ObjectId]
+    instances: [ObjectId]
 }
 
 input InstanceInput {
-  thing: ID
-  base_quantity: Int
-  quantity: Int
+    thing: ObjectId
+    base_quantity: Int
+    quantity: Int
 }
 
 input SourceInput {
-  name: String
-  url: String
-  price: Float
+    name: String
+    url: String
+    price: Float
 }
 
 input AttributeInput {
-  key: String
-  value: String
+    key: String
+    value: String
 }
 
 type Mutation {
-  createThing(input: ThingInput): Thing
-  createInstance(input: InstanceInput): Instance
-  createSource(input: SourceInput): Source
-  createAttribute(input: AttributeInput): Attribute
+    createThing(input: ThingInput): Thing
+    createInstance(input: InstanceInput): Instance
+    createSource(input: SourceInput): Source
+    createAttribute(thingId: ObjectId, input: AttributeInput): Attribute
 }

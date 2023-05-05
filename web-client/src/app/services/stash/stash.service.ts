@@ -1,6 +1,11 @@
 import {Inject, Injectable} from '@angular/core';
 import { ApolloClient , gql } from '@apollo/client';
 import {Apollo, APOLLO_OPTIONS} from "apollo-angular";
+import { map } from 'rxjs/operators';
+import {Observable} from 'rxjs';
+import {Thing} from "../../models/thing/thing.model";
+import {Attribute} from "../../models/attribute/attribute.model";
+import ObjectID from "bson-objectid";
 
 @Injectable({
   providedIn: 'root',
@@ -8,48 +13,48 @@ import {Apollo, APOLLO_OPTIONS} from "apollo-angular";
 export class StashService {
   constructor(private apollo: Apollo) {}
 
-  getThing(id: string) {
+  getThing(_id: string): Observable<{thing: Thing}> {
     const query = gql`
-      query Query($id: ID!) {
-        thing(id: $id) {
+      query Query($_id: ObjectId!) {
+        thing(_id: $_id) {
+          name
+          summary
+          category
+          subcategory
+          user
+          attributes {
+            _id
+            key
+            value
+          }
+          sources {
             _id
             name
-            summary
-            category
-            subcategory
-            user
-            attributes {
-              _id
-              key
-              value
-            }
-            sources {
+            url
+            price
+          }
+          instances {
+            _id
+            thing {
               _id
               name
-              url
-              price
             }
-            instances {
-              _id
-              thing {
-                _id
-                name
-              }
-              base_quantity
-              quantity
-            }
+            base_quantity
+            quantity
           }
         }
-
+      }
     `;
 
-    return this.apollo.watchQuery<{ thing: any }>({
+    return this.apollo.watchQuery<{ thing: Thing }>({
       query,
-      variables: { id },
-    }).valueChanges;
+      variables: { _id },
+    }).valueChanges.pipe(
+      map(result => ({ thing: result.data?.thing }))
+    );
   }
 
-  getThings() {
+  getThings(): Observable<{things: Thing[]}> {
     const query = gql`
       query GetThings {
         things {
@@ -63,12 +68,14 @@ export class StashService {
       }
     `;
 
-    return this.apollo.watchQuery<{ things: any[] }>({
+    return this.apollo.watchQuery<{ things: Thing[] }>({
       query,
-    }).valueChanges;
+    }).valueChanges.pipe(
+      map(result => ({ things: result.data?.things }))
+    );
   }
 
-  createThing(input: any) {
+  createThing(input: any): Observable<{createThing: Thing}> {
     const mutation = gql`
       mutation CreateThing($input: ThingInput!) {
         createThing(input: $input) {
@@ -82,13 +89,21 @@ export class StashService {
       }
     `;
 
-    return this.apollo.mutate<{ createThing: any }>({
+    return this.apollo.mutate<{ createThing: Thing }>({
       mutation,
       variables: { input },
-    });
+    }).pipe(
+      map(result => {
+        if (!result.data?.createThing) {
+          throw new Error("createThing is undefined");
+        }
+        return { createThing: result.data.createThing };
+      })
+    );
   }
 
-  updateThing(id: string, input: any) {
+
+  updateThing(id: string, input: any): Observable<{updateThing: Thing}> {
     const mutation = gql`
       mutation UpdateThing($id: ID!, $input: ThingInput!) {
         updateThing(id: $id, input: $input) {
@@ -102,29 +117,39 @@ export class StashService {
       }
     `;
 
-    return this.apollo.mutate<{ updateThing: any }>({
+    return this.apollo.mutate<{ updateThing: Thing }>({
       mutation,
       variables: { id, input },
-    });
+    }).pipe(
+      map(result => {
+        if (!result.data?.updateThing) {
+          throw new Error("updateThing is undefined");
+        }
+        return { updateThing: result.data.updateThing };
+      })
+    );
   }
 
-  deleteThing(id: string) {
+  createAttribute(thingId: string, input: any): Observable<{ createAttribute: Attribute }> {
     const mutation = gql`
-      mutation DeleteThing($id: ID!) {
-        deleteThing(id: $id) {
-          _id
-          name
-          summary
-          category
-          subcategory
-          user
+      mutation CreateAttribute($input: AttributeInput, $thingId: ObjectId) {
+        createAttribute(input: $input, thingId: $thingId) {
+          key
+          value
         }
       }
     `;
 
-    return this.apollo.mutate<{ deleteThing: any }>({
+    return this.apollo.mutate<{ createAttribute: Attribute }>({
       mutation,
-      variables: { id },
-    });
+      variables: { thingId, input },
+    }).pipe(
+      map(result => {
+        if (!result.data?.createAttribute) {
+          throw new Error("createThing is undefined");
+        }
+        return { createAttribute: result.data.createAttribute };
+      })
+    );
   }
 }
