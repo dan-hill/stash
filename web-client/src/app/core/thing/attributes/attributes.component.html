@@ -1,5 +1,5 @@
 <nz-card nzTitle="Attributes" [nzExtra]="extraTemplate">
-  <nz-table class="attribute-table" #editRowTable [nzData]="attributes" [nzSize]="'small'">
+  <nz-table class="attribute-table" #editRowTable [nzData]="thing?.attributes ?? []" [nzSize]="'small'">
     <thead>
     <tr style="display: none">
       <th nzLeft></th>

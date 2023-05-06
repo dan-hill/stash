@@ -1,4 +1,4 @@
-import {Input, Component, OnInit, SimpleChanges, OnChanges} from '@angular/core';
+import {Input, Component, OnInit, SimpleChanges, OnChanges, EventEmitter, Output} from '@angular/core';
 import {Attribute} from "../../../models/attribute/attribute.model";
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Thing} from "../../../models/thing/thing.model";
@@ -6,6 +6,7 @@ import {StashService} from "../../../services/stash/stash.service";
 import {Instance} from "../../../models/instance/instance.model";
 import {Source} from "../../../models/source/source.model";
 import ObjectID from "bson-objectid";
+import {switchMap} from "rxjs";
 @Component({
   selector: 'app-attributes',
   templateUrl: './attributes.component.html',
@@ -13,32 +14,22 @@ import ObjectID from "bson-objectid";
 })
 export class AttributesComponent implements OnInit {
   attributes: Attribute[] = [];
-  @Input() thing: Thing = new Thing()
+  @Input() thing: Thing = new Thing();
+  @Output() thingChange = new EventEmitter<Thing>();
   editId: string | null = null;
   visible: boolean = false;
   validateForm!: UntypedFormGroup;
 
-  submitForm(): void {
-    console.log('submit', this.validateForm.value);
-  }
-
   constructor(private fb: UntypedFormBuilder, private stash: StashService) {}
 
   ngOnInit() {
-    console.log(this.thing)
-    if (this.thing !== undefined) {
-      this.attributes = this.thing.attributes;
-    }
     this.validateForm = this.fb.group({
       key: [null, [Validators.required]],
       value: [null, [Validators.required]]
     });
   }
   ngOnChanges(changes: SimpleChanges) {
-
-    console.log(changes['thing'].currentValue);
-    this.thing = changes['thing'].currentValue;
-      this.attributes = this.thing.attributes;
+    console.log('thing changed')
 
   }
   startEdit(id: string): void {
@@ -54,34 +45,23 @@ export class AttributesComponent implements OnInit {
     this.attributes = this.attributes.filter(d => d.key !== id);
   }
 
-  addAttribute(): void {
-
-  }
-
-  clickMe(): void {
-    this.visible = false;
-  }
-
   change(value: boolean): void {
     console.log(value);
   }
 
-  closePopover(): void {
-    this.visible = false;
-  }
-
   saveAttribute() {
-    this.stash.createAttribute(this.thing._id, this.validateForm.value).subscribe({
-      next: (data: any) => {
-        console.log(data);
-        this.visible = false;
-
-      }
-    });
+    if (this.thing && this.thing._id) {
+      this.stash.createAttribute(this.thing._id, this.validateForm.value).pipe(
+        switchMap(() => this.stash.getThing(this.thing._id))
+      ).subscribe({
+        next: query => {
+          console.log('saved attribute');
+        },
+        error: error => {
+          console.error(error);
+        }
+      });
+    }
   }
 
-  removeTypename<T>(obj: T): Partial<T> {
-    const { __typename, ...rest } = obj as Partial<T & { __typename?: string }>;
-    return rest as Partial<T>;
-  }
 }

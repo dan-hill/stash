@@ -39,15 +39,11 @@ const resolvers = {
         createSource: async (_, { input }) => await Source.create(input),
         createAttribute: async (_, {thingId, input }) => {
             const attribute = await Attribute.create(input);
-            console.log(attribute);
-            console.log(thingId);
-            const thing =  Thing.findById(thingId).exec();
+            const thing =  await Thing.findById(new mongoose.Types.ObjectId(thingId)).exec();
             thing.attributes.push(attribute._id);
             await thing.save();
-
             return attribute;
         },
-
     },
     Thing: {
         attributes: async (parent) => await Attribute.find({ _id: { $in: parent.attributes } }),

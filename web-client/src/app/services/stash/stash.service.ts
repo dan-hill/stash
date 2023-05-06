@@ -17,6 +17,7 @@ export class StashService {
     const query = gql`
       query Query($_id: ObjectId!) {
         thing(_id: $_id) {
+          _id
           name
           summary
           category
@@ -49,6 +50,7 @@ export class StashService {
     return this.apollo.watchQuery<{ thing: Thing }>({
       query,
       variables: { _id },
+      fetchPolicy: 'network-only', // Always fetch data from the network and not from the cache
     }).valueChanges.pipe(
       map(result => ({ thing: result.data?.thing }))
     );
