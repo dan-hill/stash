@@ -1,15 +1,40 @@
 <nz-layout>
   <nz-header>
-
+    <span class="">stash</span><span class="spacer"> </span><span class="actions"><ng-container *ngIf="user | async as user">{{user.email}}</ng-container></span>
   </nz-header>
   <nz-content class="outer-content">
     <nz-layout class="inner-layout">
-      <nz-sider nzWidth="200px" nzTheme="light">
-        <nz-tree [nzData]="nodes" nzShowLine (nzClick)="nzEvent($event)" ></nz-tree>
+      <nz-sider nzWidth="400px">
+        <nz-table #expandTable [nzData]="nodes" nzTableLayout="fixed" [nzSize]="'small'" [nzShowPagination]="false">
+          <thead>
+          <tr>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <ng-container *ngFor="let data of expandTable.data">
+            <ng-container *ngFor="let item of mapOfExpandedData[data.key]">
+              <tr *ngIf="(item.parent && item.parent.expand) || !item.parent">
+                <td
+                  [nzIndentSize]="item.level! * 20"
+                  [nzShowExpand]="!!item.children"
+                  [(nzExpand)]="item.expand"
+                  (nzExpandChange)="collapse(mapOfExpandedData[data.key], item, $event)"
+                >
+                  {{ item.name }}
+                </td>
+                <td>{{ item.age }}</td>
+                <td>{{ item.address }}</td>
+              </tr>
+            </ng-container>
+          </ng-container>
+          </tbody>
+        </nz-table>
       </nz-sider>
       <nz-content class="inner-content"> <router-outlet></router-outlet></nz-content>
     </nz-layout>
   </nz-content>
-  <nz-footer>Ant Design ©2020 Implement By Angular</nz-footer>
+  <nz-footer><nz-breadcrumb [nzAutoGenerate]="true"></nz-breadcrumb>
+  </nz-footer>
 
 </nz-layout>

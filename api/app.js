@@ -36,9 +36,13 @@ app.use(session);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const typeDefs = gql(fs.readFileSync(path.join(__dirname, '/graphql/schema.graphql'), 'utf-8'));
-const server = new ApolloServer({ typeDefs, resolvers, context: {
-        Thing: Thing, // Pass the Thing model to the context object
-    }, });
+const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: ({ req }) => {
+        return { req };
+    }
+});
 await server.start();
 server.applyMiddleware({ app });
 

@@ -17,11 +17,6 @@ export class AppComponent implements OnInit{
     private route: ActivatedRoute,
   ) { }
   ngOnInit(): void {
-    if (this.authService.isAuthenticated()) {
-      const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/stash';
-      this.router.navigateByUrl(returnUrl);
-    } else {
-      this.router.navigateByUrl('/login');
-    }
+    console.log('app component init');
   }
 }

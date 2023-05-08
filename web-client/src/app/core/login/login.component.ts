@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.authService.isAuthenticated()) {
-      const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+      const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/stash';
       this.router.navigateByUrl(returnUrl);
     }
   }
@@ -50,25 +50,13 @@ export class LoginComponent implements OnInit {
       this.authService.authenticate(this._v().email, this._v().password).subscribe({
         next: (data: any) => {
           this.isLoading = false;
-          console.log(data);
           this.storage.setAccessToken(data.access_token);
           this.storage.setRefreshToken(data.refresh_token);
 
           if (this.authService.isAuthenticated()) {
-            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/stash';
             this.router.navigateByUrl(returnUrl);
           }
-
-          // this.userService.get().subscribe({
-          //   next: (data: any) => {
-          //     if (data.error === INVALID_TOKEN) {
-          //       //this.storage.clearUser();
-          //     } else {
-          //       //this.storage.setUser(data);
-          //       const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-          //       this.router.navigateByUrl(returnUrl);              }
-          //   }
-          // });
         },
         error: (error) => {
           this.isLoading = false;

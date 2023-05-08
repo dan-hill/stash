@@ -5,6 +5,8 @@ import { Attribute } from "../model/attribute.js";
 import { GraphQLScalarType } from 'graphql';
 import { Kind } from 'graphql/language/kinds.mjs';
 import mongoose from 'mongoose';
+import {authenticate, getUser} from "../service/fusion_auth.js";
+import {User} from "../model/user.js";
 
 const ObjectId = new GraphQLScalarType({
     name: 'ObjectId',
@@ -31,7 +33,34 @@ const resolvers = {
         things: async () => await Thing.find(),
         instances: async () => await Instance.find(),
         sources: async () => await Source.find(),
-        attributes: async () => await Attribute.find()
+        attributes: async () => await Attribute.find(),
+        user: async (parent, args, context) => {
+            const user = await getUser(context);
+        },
+        me: async (_, __, context) => {
+            const userId = await authenticate(context);
+            if (!userId) {
+                throw new Error('Not authenticated');
+            }
+            const user = await getUser(context);
+
+            let userModel = await User.findOne({ _authId: userId });
+
+            if (!userModel) {
+                userModel = new User({
+                    _id: new mongoose.Types.ObjectId(),
+                    _authId: userId,
+                    email: user.email,
+                });
+
+                await userModel.save();
+            }
+
+            return {
+                _id: userModel._id,
+                email: userModel.email,
+            };
+        },
     },
     Mutation: {
         createThing: async (_, { input }) => await Thing.create(input),
@@ -44,6 +73,32 @@ const resolvers = {
             await thing.save();
             return attribute;
         },
+        updateAttribute: async (_, { attributeId, input }) => {
+            const attribute = await Attribute.findById(new mongoose.Types.ObjectId(attributeId)).exec();
+            if (!attribute) {
+                throw new Error('Attribute not found');
+            }
+            Object.assign(attribute, input);
+            await attribute.save();
+            return attribute;
+        },
+
+        deleteAttribute: async (_, { attributeId, thingId }) => {
+            const attribute = await Attribute.findById(new mongoose.Types.ObjectId(attributeId)).exec();
+            if (!attribute) {
+                throw new Error('Attribute not found');
+            }
+            const thing = await Thing.findById(new mongoose.Types.ObjectId(thingId)).exec();
+            if (!thing) {
+                throw new Error('Thing not found');
+            }
+            thing.attributes = thing.attributes.filter(attrId => !attrId.equals(attribute._id));
+            await thing.save();
+            await Attribute.deleteOne({ _id: attribute._id });
+            return attributeId;
+        },
+
+
     },
     Thing: {
         attributes: async (parent) => await Attribute.find({ _id: { $in: parent.attributes } }),

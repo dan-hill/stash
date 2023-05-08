@@ -7,7 +7,7 @@ import { en_US } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { IconsProviderModule } from './icons-provider.module';
@@ -31,6 +31,7 @@ import {NzPopconfirmModule} from "ng-zorro-antd/popconfirm";
 import {SourcesComponent} from "./core/thing/sources/sources.component";
 import {InstancesComponent} from "./core/thing/instances/instances.component";
 import {NzPopoverModule} from "ng-zorro-antd/popover";
+import {AuthInterceptor} from "./services/auth/auth.interceptor";
 
 registerLocaleData(en);
 
@@ -68,6 +69,7 @@ registerLocaleData(en);
         NzPopoverModule
     ],
   providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: NZ_I18N, useValue: en_US }
   ],
   bootstrap: [AppComponent]

@@ -38,6 +38,8 @@ type Query {
     instances: [Instance]
     sources: [Source]
     attributes: [Attribute]
+    user(_id: ObjectId): User
+    me: User
 }
 
 input ThingInput {
@@ -68,9 +70,17 @@ input AttributeInput {
     value: String
 }
 
+type User {
+  _id: ObjectId!
+  email: String!
+}
+
 type Mutation {
     createThing(input: ThingInput): Thing
     createInstance(input: InstanceInput): Instance
     createSource(input: SourceInput): Source
     createAttribute(thingId: ObjectId, input: AttributeInput): Attribute
+    updateAttribute(attributeId: ObjectId, input: AttributeInput): Attribute
+    deleteAttribute(thingId: ObjectId, attributeId: ObjectId): ObjectId
+
 }

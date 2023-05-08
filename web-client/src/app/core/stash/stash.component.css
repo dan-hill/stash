@@ -5,7 +5,6 @@
 .logo {
   width: 120px;
   height: 31px;
-  background: rgba(255, 255, 255, 0.2);
   margin: 16px 24px 16px 0;
   float: left;
 }
@@ -14,6 +13,10 @@ nz-header {
   position: fixed;
   height: 32px;
   width: 100%;
+  line-height: 32px;
+  font-family: Hack, monospace;
+  font-size: 16px;
+  padding: 0 10px;
 }
 
 [nz-menu] {
@@ -27,14 +30,6 @@ nz-breadcrumb {
   margin: 16px 0;
 }
 
-nz-content.inner-content {
-  margin-top: 32px;
-  margin-bottom: 32px;
-  margin-left: 200px;
-  padding: 0px;
-  background: #fff;
-  min-height: 380px;
-}
 
 nz-footer {
   position: fixed;
@@ -45,10 +40,45 @@ nz-footer {
 }
 
 nz-sider {
-  overflow: auto;
-  height: 100%;
+  overflow-y: auto;
+  height: calc(100vh - 64px); /* Adjust this value according to your header and footer height */
   position: fixed;
   left: 0;
+  top: 32px;
+}
+
+nz-content.inner-content {
   margin-top: 32px;
-  margin-bottom: 32px;
+  margin-left: 400px;
+  padding: 0px;
+  min-height: calc(100vh - 64px); /* Adjust this value according to your header and footer height */
+  overflow-y: auto;
+}
+
+nz-tree {
+  overflow: hidden;
+  margin: 0 -24px;
+  padding: 0 24px;
+}
+
+.custom-node {
+  cursor: pointer;
+  line-height: 24px;
+  margin-left: 4px;
+  display: inline-block;
+}
+
+.file-name,
+.folder-name {
+  margin-left: 4px;
+}
+
+.file-desc,
+.folder-desc {
+  padding: 0 8px;
+  display: inline-block;
+  background: #87ceff;
+  color: #ffffff;
+  position: relative;
+  left: 12px;
 }

@@ -32,18 +32,44 @@ export class AttributesComponent implements OnInit {
     console.log('thing changed')
 
   }
-  startEdit(id: string): void {
-    this.editId = id;
+
+  key: string = '';
+  value: string = '';
+
+  startEdit(data: any): void {
+    this.editId = data._id;
+    this.key = data.key;
+    this.value = data.value;
   }
 
-  stopEdit(): void {
+  stopEdit(data: any): void {
+    this.updateAttribute(data._id, {key: this.key, value: this.value});
     this.editId = null;
   }
 
-
-  deleteRow(id: string): void {
-    this.attributes = this.attributes.filter(d => d.key !== id);
-  }
+updateAttribute(id: string, input: any): void {
+    this.stash.updateAttribute(id, input).pipe(
+      switchMap(() => this.stash.getThing(this.thing._id))
+    ).subscribe({
+      next: query => {
+        console.log('saved attribute');
+      },
+      error: error => {
+        console.error(error);
+      }
+    });
+}
+  deleteAttribute(id: string): void {
+    this.stash.deleteAttribute(id, this.thing._id ).pipe(
+      switchMap(() => this.stash.getThing(this.thing._id))
+    ).subscribe({
+      next: query => {
+        console.log('saved attribute');
+      },
+      error: error => {
+        console.error(error);
+      }
+    });  }
 
   change(value: boolean): void {
     console.log(value);

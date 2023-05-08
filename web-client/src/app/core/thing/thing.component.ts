@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {KtdGridLayout, ktdTrackById} from '@katoid/angular-grid-layout';
 import {StashService} from "../../services/stash/stash.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Thing} from "../../models/thing/thing.model";
+import {StashComponent} from "../stash/stash.component";
 @Component({
   selector: 'app-thing',
   templateUrl: './thing.component.html',
@@ -23,12 +24,16 @@ export class ThingComponent implements OnInit {
 
   constructor(
     private stash: StashService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
 ) {
 
   }
 
   ngOnInit() {
+    this.route.url.subscribe(url => {
+      console.log('The URL changed to: ' + url)
+    } );
     this.route.params.subscribe(params => {
       const id = params['id'];
       this.stash.getThing(id).subscribe((query: any) => {
@@ -39,4 +44,6 @@ export class ThingComponent implements OnInit {
   onLayoutUpdated(layout: KtdGridLayout) {
     this.layout = layout;
   }
+
+  protected readonly StashComponent = StashComponent;
 }

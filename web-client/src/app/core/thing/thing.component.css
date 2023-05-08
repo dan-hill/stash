@@ -1,0 +1,19 @@
+:host {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+}
+
+.content-container {
+  height: calc(100% - 32px); /* Adjust according to your header and footer height */
+  overflow-y: hidden;
+  position: relative;
+}
+
+.grid-container {
+  height: 100%;
+  overflow-y: auto;
+  position: absolute;
+  width: 100%;
+  padding: 10px;
+}
