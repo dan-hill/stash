@@ -1,0 +1,25 @@
+<nz-table #expandTable [nzData]="nodes" nzTableLayout="fixed" [nzSize]="'small'" [nzShowPagination]="false">
+  <thead>
+  <tr style="display: none">
+    <th nzLeft></th>
+    <th nzRight nzWidth="30px" ></th>
+  </tr>
+  </thead>
+  <tbody>
+  <ng-container *ngFor="let data of expandTable.data">
+    <ng-container *ngFor="let item of mapOfExpandedData[data.key]">
+      <tr *ngIf="(item.parent && item.parent.expand) || !item.parent">
+        <td
+          [nzIndentSize]="item.level! * 20"
+          [nzShowExpand]="!!item.children"
+          [(nzExpand)]="item.expand"
+          (nzExpandChange)="collapse(mapOfExpandedData[data.key], item, $event)"
+          (click)="openThing(item.key)"
+        >
+          {{ item.name }}
+        </td>
+      </tr>
+    </ng-container>
+  </ng-container>
+  </tbody>
+</nz-table>

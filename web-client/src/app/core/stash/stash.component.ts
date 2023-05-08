@@ -8,17 +8,7 @@ import {User} from "../../models/user/user.model";
 import {UserService} from "../../services/user/user.service";
 import {Observable} from "rxjs";
 import {map} from "rxjs/operators";
-
-export interface TreeNodeInterface {
-  key: string;
-  name: string;
-  age?: number;
-  level?: number;
-  expand?: boolean;
-  address?: string;
-  children?: TreeNodeInterface[];
-  parent?: TreeNodeInterface;
-}
+import {KtdGridLayout, ktdTrackById} from "@katoid/angular-grid-layout";
 
 @Component({
   selector: 'app-stash',
@@ -26,9 +16,17 @@ export interface TreeNodeInterface {
   styleUrls: ['./stash.component.css']
 })
 export class StashComponent implements OnInit {
-  private things: Observable<{ things: Thing[] }> = new Observable<{ things: Thing[] }>();
-  public nodes: any[] = [];
+  public things: Observable<{ things: Thing[] }> = new Observable<{ things: Thing[] }>();
   public user: Observable<User> = new Observable<User>();
+  cols: number = 6;
+  rowHeight: number = 100;
+  layout: KtdGridLayout = [
+    {id: 'thing-list', x: 0, y: 0, w: 3, h: 3},
+    {id: 'instances', x: 3, y: 0, w: 3, h: 3},
+    {id: '2', x: 0, y: 3, w: 3, h: 3, minW: 2, minH: 3},
+    {id: '3', x: 3, y: 3, w: 3, h: 3, minW: 2, maxW: 3, minH: 2, maxH: 5},
+  ];
+  trackById = ktdTrackById
   constructor(
     private stash: StashService,
     private router: Router,
@@ -38,105 +36,9 @@ export class StashComponent implements OnInit {
   ngOnInit() {
     this.user = this.userService.getMe();
     this.things = this.stash.getThings();
-
-    this.things.pipe(
-      map(response => {
-        const categories = this.getCategories(response.things);
-        console.log(categories);
-        const nodes = categories.map((category: any) => {
-          return {
-            name: category,
-            key: '1',
-            expand: false,
-            children: response.things
-              .filter((entity: any) => entity.category === category)
-              .map((thing: any) => {
-                return {
-                  name: thing.name,
-                  key: thing._id,
-                };
-              }),
-          };
-        });
-        console.log(nodes)
-        return nodes;
-      })
-    ).subscribe(nodes => {
-      this.nodes = nodes; // Assign the new nodes first
-      this.nodes.forEach(item => {
-        this.mapOfExpandedData[item.key] = this.convertTreeToList(item);
-      });
-    });
   }
 
-  getCategories(things: Thing[]): string[] {
-    return _(things)
-      .map((thing: Thing) => {
-        return thing.category;
-      })
-      .uniq()
-      .value();
+  onLayoutUpdated(layout: KtdGridLayout) {
+    this.layout = layout;
   }
-  nzEvent(event: NzFormatEmitEvent): void {
-    if(event.keys) {
-      const id = event.keys[0];
-      this.router.navigateByUrl(`/stash/${id}`);
-    }
-  }
-
-  expandTreeNode(data: NzTreeNode | NzFormatEmitEvent): void {
-    // do something if u want
-    if (data instanceof NzTreeNode) {
-      data.isExpanded = !data.isExpanded;
-    } else {
-      const node = data.node;
-      if (node) {
-        node.isExpanded = !node.isExpanded;
-      }
-    }
-  }
-
-
-  mapOfExpandedData: { [key: string]: TreeNodeInterface[] } = {};
-
-  collapse(array: TreeNodeInterface[], data: TreeNodeInterface, $event: boolean): void {
-    if (!$event) {
-      if (data.children) {
-        data.children.forEach(d => {
-          const target = array.find(a => a.key === d.key)!;
-          target.expand = false;
-          this.collapse(array, target, false);
-        });
-      } else {
-        return;
-      }
-    }
-  }
-
-  convertTreeToList(root: TreeNodeInterface): TreeNodeInterface[] {
-    const stack: TreeNodeInterface[] = [];
-    const array: TreeNodeInterface[] = [];
-    const hashMap = {};
-    stack.push({ ...root, level: 0, expand: false });
-
-    while (stack.length !== 0) {
-      const node = stack.pop()!;
-      this.visitNode(node, hashMap, array);
-      if (node.children) {
-        for (let i = node.children.length - 1; i >= 0; i--) {
-          stack.push({ ...node.children[i], level: node.level! + 1, expand: false, parent: node });
-        }
-      }
-    }
-
-    return array;
-  }
-
-  visitNode(node: TreeNodeInterface, hashMap: { [key: string]: boolean }, array: TreeNodeInterface[]): void {
-    if (!hashMap[node.key]) {
-      hashMap[node.key] = true;
-      array.push(node);
-    }
-  }
-
 }

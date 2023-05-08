@@ -1,12 +1,8 @@
-.layout {
-  min-height: 100vh;
-}
-
-.logo {
-  width: 120px;
-  height: 31px;
-  margin: 16px 24px 16px 0;
-  float: left;
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }
 
 nz-header {
@@ -19,18 +15,6 @@ nz-header {
   padding: 0 10px;
 }
 
-[nz-menu] {
-  line-height: 64px;
-}
-
-nz-content {
-}
-
-nz-breadcrumb {
-  margin: 16px 0;
-}
-
-
 nz-footer {
   position: fixed;
   bottom: 0;
@@ -39,46 +23,17 @@ nz-footer {
   padding: 0;
 }
 
-nz-sider {
-  overflow-y: auto;
-  height: calc(100vh - 64px); /* Adjust this value according to your header and footer height */
-  position: fixed;
-  left: 0;
-  top: 32px;
-}
-
-nz-content.inner-content {
+nz-content {
+  height: calc(100% - 32px); /* Adjust according to your header and footer height */
   margin-top: 32px;
-  margin-left: 400px;
-  padding: 0px;
-  min-height: calc(100vh - 64px); /* Adjust this value according to your header and footer height */
+  overflow-y: hidden;
+  position: inherit;
+}
+
+.grid-container {
+  height: 100%;
   overflow-y: auto;
-}
-
-nz-tree {
-  overflow: hidden;
-  margin: 0 -24px;
-  padding: 0 24px;
-}
-
-.custom-node {
-  cursor: pointer;
-  line-height: 24px;
-  margin-left: 4px;
-  display: inline-block;
-}
-
-.file-name,
-.folder-name {
-  margin-left: 4px;
-}
-
-.file-desc,
-.folder-desc {
-  padding: 0 8px;
-  display: inline-block;
-  background: #87ceff;
-  color: #ffffff;
-  position: relative;
-  left: 12px;
+  position: absolute;
+  width: 100%;
+  padding: 10px;
 }

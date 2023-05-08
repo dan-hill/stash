@@ -32,6 +32,7 @@ import {SourcesComponent} from "./core/thing/sources/sources.component";
 import {InstancesComponent} from "./core/thing/instances/instances.component";
 import {NzPopoverModule} from "ng-zorro-antd/popover";
 import {AuthInterceptor} from "./services/auth/auth.interceptor";
+import {ThingListComponent} from "./core/stash/thing-list/thing-list.component";
 
 registerLocaleData(en);
 
@@ -43,7 +44,8 @@ registerLocaleData(en);
     ThingComponent,
     AttributesComponent,
     SourcesComponent,
-    InstancesComponent
+    InstancesComponent,
+    ThingListComponent
   ],
     imports: [
         BrowserModule,
