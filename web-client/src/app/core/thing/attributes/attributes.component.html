@@ -2,6 +2,8 @@
   <nz-header>
     <span class="">stash</span>
   </nz-header>
+  <nz-content class="tab-content">
+    <div class="tab-container">
   <nz-table class="attribute-table" #editRowTable [nzData]="thing?.attributes ?? []" [nzSize]="'small'" [nzFrontPagination]="false">
     <thead>
     <tr style="display: none">
@@ -31,36 +33,9 @@
     </tr>
     </tbody>
   </nz-table>
+    </div>
+  </nz-content>
 </nz-layout>
-<nz-table class="attribute-table" #editRowTable [nzData]="thing?.attributes ?? []" [nzSize]="'small'" [nzFrontPagination]="false">
-    <thead>
-    <tr style="display: none">
-      <th nzLeft></th>
-
-      <th nzRight nzWidth="150px"></th>
-      <th nzRight nzWidth="30px" ></th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let data of editRowTable.data" class="editable-row">
-      <td>
-        <div class="editable-cell" [hidden]="editId === data._id" (click)="startEdit(data)">
-          {{ data.key }}
-        </div>
-        <input [hidden]="editId !== data._id" type="text" nz-input [(ngModel)]="key" (blur)="stopEdit(data)" />
-      </td>
-      <td>
-        <div class="editable-cell" [hidden]="editId === data._id" (click)="startEdit(data)">
-          {{ data.value }}
-        </div>
-        <input [hidden]="editId !== data._id" type="text" nz-input [(ngModel)]="value" (blur)="stopEdit(data)" />
-      </td>
-      <td class="action-cell">
-        <button nz-button nzType="default"  nzDanger [nzSize]="'small'" nzShape="circle" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteAttribute(data._id)"><span nz-icon nzType="delete" nzTheme="outline"></span></button>
-      </td>
-    </tr>
-    </tbody>
-  </nz-table>
 
 <ng-template #extraTemplate>
   <button

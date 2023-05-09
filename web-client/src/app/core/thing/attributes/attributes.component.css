@@ -11,3 +11,22 @@ nz-table {
 .action-cell {
   padding-right: 0 !important;
 }
+
+.tab-content {
+  overflow-y: auto;
+  height: calc(100vh - 32px);
+  padding: 12px;
+  position: relative;
+  top: 32px;
+}
+nz-header {
+  position: fixed;
+  height: 32px;
+  width: 100%;
+  line-height: 32px;
+  font-family: Hack, monospace;
+  font-size: 16px;
+  padding: 0 10px;
+}
+
+
