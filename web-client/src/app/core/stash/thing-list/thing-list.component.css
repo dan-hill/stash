@@ -1,0 +1,13 @@
+td {
+  padding: 0px !important;
+  border-bottom: none !important;
+}
+
+table {
+ height: 100%;
+  width: 100%;
+}
+
+tbody {
+  border-bottom: none !important;
+}

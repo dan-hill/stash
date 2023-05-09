@@ -68,7 +68,7 @@ registerLocaleData(en);
         KtdGridModule,
         NzTableModule,
         NzPopconfirmModule,
-        NzPopoverModule
+        NzPopoverModule,
     ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

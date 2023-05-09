@@ -3,7 +3,7 @@ import {Thing} from "../../../models/thing/thing.model";
 import {StashService} from "../../../services/stash/stash.service";
 import {Router} from "@angular/router";
 import {UserService} from "../../../services/user/user.service";
-import {map} from "rxjs/operators";
+import {expand, map} from "rxjs/operators";
 import _ from "lodash";
 
 export interface TreeNodeInterface {
@@ -36,26 +36,8 @@ export class ThingListComponent implements OnInit{
   ) { }
 
   ngOnInit(): void {
-    const categories = this.getCategories(this.things);
-    const nodes = categories.map((category: any) => {
-      return {
-        name: category,
-        key: '1',
-        expand: false,
-        children: this.things
-          .filter((entity: any) => entity.category === category)
-          .map((thing: any) => {
-            return {
-              name: thing.name,
-              key: thing._id,
-            };
-          }),
-      };
-    });
+   this.makeNodes()
 
-    this.nodes.forEach(item => {
-      this.mapOfExpandedData[item.key] = this.convertTreeToList(item);
-    });
   }
 
   getCategories(things: Thing[]): string[] {
@@ -67,7 +49,33 @@ export class ThingListComponent implements OnInit{
       .value();
   }
 
+  getCategoryChildren(category: string): Thing[] {
+    return this.things.filter((thing: Thing) => {
+      console.log(thing.category)
+      return thing.category === category});
+  }
+
+
+  makeNodes(): void {
+    const categories = this.getCategories(this.things).map((category: any) => {
+      return { key: category, name: category, expand: false, children: [] };
+    });
+
+    this.nodes = categories.map((category: any) => {
+      return {...category, children: this.getCategoryChildren(category.key).map((thing: Thing) => { return {key: thing._id, name: thing.name }})};
+    } );
+
+    this.nodes.forEach(item => {
+      this.mapOfExpandedData[item.key] = this.convertTreeToList(item);
+    });
+  }
+
+  ngOnChanges() {
+    this.makeNodes();
+  }
+
   collapse(array: TreeNodeInterface[], data: TreeNodeInterface, $event: boolean): void {
+    console.log('collapse');
     if (!$event) {
       if (data.children) {
         data.children.forEach(d => {
@@ -107,6 +115,10 @@ export class ThingListComponent implements OnInit{
     }
   }
 
+  expandNode(node: TreeNodeInterface): void {
+    console.log('expand');
+    console.log(node);
+  }
   openThing(id: string) {
     this.router.navigateByUrl(`/stash/${id}`);
   }
