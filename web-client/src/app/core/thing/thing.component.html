@@ -1,16 +1,3 @@
-<div class="content-container">
-  <div class="grid-container">
-    <ktd-grid [cols]="cols"
-              [rowHeight]="rowHeight"
-              [layout]="layout"
-              [gap]="10"
-              (layoutUpdated)="onLayoutUpdated($event)">
-      <ktd-grid-item id="attributes">
-        <app-attributes [(thing)]="thing"></app-attributes>
-      </ktd-grid-item>
-      <ktd-grid-item id="instances">
-        <!-- <app-instances [instances]="thing.instances"></app-instances> -->
-      </ktd-grid-item>
-    </ktd-grid>
-  </div>
-</div>
+<nz-tabset nzType="card" [nzSize]="'small'">
+  <nz-tab [nzTitle]="'Attributes'"><app-attributes [(thing)]="thing"></app-attributes></nz-tab>
+</nz-tabset>

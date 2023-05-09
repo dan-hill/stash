@@ -1,25 +1,20 @@
-<nz-layout>
+<nz-layout class="stash-container">
   <nz-header>
-    <span class="">stash</span><span class="spacer"> </span><span class="actions"><ng-container *ngIf="user | async as user">{{user.email}}</ng-container></span>
+    <span class="">stash</span><span class="spacer"> </span><span class="actions"><ng-container
+    *ngIf="user | async as user">{{user.email}}</ng-container></span>
   </nz-header>
   <nz-content class="outer-content">
     <nz-layout class="content-container">
-        <div class="grid-container">
-          <ktd-grid [cols]="cols"
-                    [rowHeight]="rowHeight"
-                    [layout]="layout"
-                    [gap]="10"
-                    (layoutUpdated)="onLayoutUpdated($event)">
-            <ktd-grid-item id="thing-list">
-              <ng-container *ngIf="things | async as things">
-              <app-thing-list [(things)]="things.things"></app-thing-list>
-                </ng-container>
-            </ktd-grid-item>
-          </ktd-grid>
-      </div>
+      <nz-sider [nzWidth]="350">
+        <ng-container *ngIf="things | async as things">
+          <app-thing-list [(things)]="things.things"></app-thing-list>
+        </ng-container>
+      </nz-sider>
+      <router-outlet></router-outlet>
     </nz-layout>
   </nz-content>
-  <nz-footer><nz-breadcrumb [nzAutoGenerate]="true"></nz-breadcrumb>
+  <nz-footer>
+    <nz-breadcrumb [nzAutoGenerate]="true"></nz-breadcrumb>
   </nz-footer>
 
 </nz-layout>

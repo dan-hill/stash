@@ -46,4 +46,5 @@ export class ThingComponent implements OnInit {
   }
 
   protected readonly StashComponent = StashComponent;
+  tabs = [1, 2, 3];
 }

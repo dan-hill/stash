@@ -18,10 +18,10 @@ import {KtdGridLayout, ktdTrackById} from "@katoid/angular-grid-layout";
 export class StashComponent implements OnInit {
   public things: Observable<{ things: Thing[] }> = new Observable<{ things: Thing[] }>();
   public user: Observable<User> = new Observable<User>();
-  cols: number = 6;
-  rowHeight: number = 100;
+  cols: number = 100;
+  rowHeight: number = 10;
   layout: KtdGridLayout = [
-    {id: 'thing-list', x: 0, y: 0, w: 3, h: 3},
+    {id: 'thing-list', x: 0, y: 0, w: 15, h: 25},
     {id: 'instances', x: 3, y: 0, w: 3, h: 3},
     {id: '2', x: 0, y: 3, w: 3, h: 3, minW: 2, minH: 3},
     {id: '3', x: 3, y: 3, w: 3, h: 3, minW: 2, maxW: 3, minH: 2, maxH: 5},

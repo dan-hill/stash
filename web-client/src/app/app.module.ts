@@ -33,6 +33,7 @@ import {InstancesComponent} from "./core/thing/instances/instances.component";
 import {NzPopoverModule} from "ng-zorro-antd/popover";
 import {AuthInterceptor} from "./services/auth/auth.interceptor";
 import {ThingListComponent} from "./core/stash/thing-list/thing-list.component";
+import {NzTabsModule} from "ng-zorro-antd/tabs";
 
 registerLocaleData(en);
 
@@ -47,29 +48,30 @@ registerLocaleData(en);
     InstancesComponent,
     ThingListComponent
   ],
-    imports: [
-        BrowserModule,
-        FormsModule,
-        HttpClientModule,
-        BrowserAnimationsModule,
-        AppRoutingModule,
-        IconsProviderModule,
-        NzLayoutModule,
-        NzMenuModule,
-        GraphQLModule,
-        NzCardModule,
-        NzFormModule,
-        NzInputModule,
-        NzCheckboxModule,
-        NzButtonModule,
-        ReactiveFormsModule,
-        NzBreadCrumbModule,
-        NzTreeModule,
-        KtdGridModule,
-        NzTableModule,
-        NzPopconfirmModule,
-        NzPopoverModule,
-    ],
+  imports: [
+    BrowserModule,
+    FormsModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    AppRoutingModule,
+    IconsProviderModule,
+    NzLayoutModule,
+    NzMenuModule,
+    GraphQLModule,
+    NzCardModule,
+    NzFormModule,
+    NzInputModule,
+    NzCheckboxModule,
+    NzButtonModule,
+    ReactiveFormsModule,
+    NzBreadCrumbModule,
+    NzTreeModule,
+    KtdGridModule,
+    NzTableModule,
+    NzPopconfirmModule,
+    NzPopoverModule,
+    NzTabsModule,
+  ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: NZ_I18N, useValue: en_US }
