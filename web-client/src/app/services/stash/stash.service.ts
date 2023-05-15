@@ -67,6 +67,26 @@ export class StashService {
           category
           subcategory
           user
+          attributes {
+            _id
+            key
+            value
+          }
+          sources {
+            _id
+            name
+            url
+            price
+          }
+          instances {
+            _id
+            thing {
+              _id
+              name
+            }
+            base_quantity
+            quantity
+          }
         }
       }
     `;
@@ -203,10 +223,10 @@ export class StashService {
       })
     );
   }
-  createInstance(input: any): Observable<{ createInstance: Instance }> {
+  createInstance(owner: string, input: any): Observable<{ createInstance: Instance }> {
     const mutation = gql`
-      mutation CreateInstance($input: InstanceInput!) {
-        createInstance(input: $input) {
+      mutation CreateInstance($owner: ObjectId, $input: InstanceInput!) {
+        createInstance(owner: $owner, input: $input) {
           _id
           thing {
             _id
@@ -220,7 +240,7 @@ export class StashService {
 
     return this.apollo.mutate<{ createInstance: Instance }>({
       mutation,
-      variables: { input },
+      variables: { owner, input },
     }).pipe(
       map(result => {
         if (!result.data?.createInstance) {

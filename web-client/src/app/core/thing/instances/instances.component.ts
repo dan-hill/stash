@@ -59,8 +59,9 @@ export class InstancesComponent implements OnInit {
     })
   }
   ngOnChanges() {
-    console.log('change');
-
+    this.thing.subscribe(thing => {
+      this.getInstances(thing);
+    } );
   }
   change(value: boolean): void {
     console.log(value);
@@ -80,7 +81,10 @@ export class InstancesComponent implements OnInit {
 
   saveInstance() {
     this.thing.subscribe(thing => {
-      this.stash.createInstance({_id: thing?._id, ...this.validateForm.value}).subscribe({
+      if (thing === null) return;
+      console.log(this.validateForm.value)
+      console.log(thing._id);
+      this.stash.createInstance(thing._id, {thing: this.validateForm.value.key[0]}).subscribe({
         next: query => {
           console.log(query);
         },

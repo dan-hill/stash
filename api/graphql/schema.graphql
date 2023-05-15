@@ -77,7 +77,7 @@ type User {
 
 type Mutation {
     createThing(input: ThingInput): Thing
-    createInstance(input: InstanceInput): Instance
+    createInstance(owner: ObjectId, input: InstanceInput): Instance
     createSource(input: SourceInput): Source
     createAttribute(thingId: ObjectId, input: AttributeInput): Attribute
     updateAttribute(attributeId: ObjectId, input: AttributeInput): Attribute

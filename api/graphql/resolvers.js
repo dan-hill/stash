@@ -68,10 +68,22 @@ const resolvers = {
             await thing.save();
             return thing;
         },
-        createInstance: async (_, { input }) => await Instance.create(input),
+        createInstance: async (_, { owner, input }) =>{
+            console.log('createInstance', owner, input);
+            console.log('createInstance', input);
+            const instance = await Instance.create(input)   ;
+            console.log('createInstance', instance);
+            const thing =  await Thing.findById(new mongoose.Types.ObjectId(owner)).exec();
+            console.log('createInstance', thing);
+            thing.instances.push(instance._id);
+            await thing.save();
+            return instance;
+        },
         createSource: async (_, { input }) => await Source.create(input),
-        createAttribute: async (_, {thingId, input }) => {
+        createAttribute: async (_, { thingId, input }) => {
+            console.log('createAttribute', input)
             const attribute = await Attribute.create(input);
+            console.log('createAttribute', attribute)
             const thing =  await Thing.findById(new mongoose.Types.ObjectId(thingId)).exec();
             thing.attributes.push(attribute._id);
             await thing.save();
