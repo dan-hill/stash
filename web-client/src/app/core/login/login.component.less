@@ -5,6 +5,8 @@
   left: 50%;
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
+  width: 350px;
+  font-family: Hack, monospace;
 }
 
 .login-form {
@@ -23,3 +25,13 @@
   width: 100%;
 }
 
+:host::ng-deep .ant-card-head-wrapper {
+  vertical-align: middle !important;
+  display: inline !important;
+}
+
+:host::ng-deep .ant-card-head-title {
+  padding: 0;
+  vertical-align: middle !important;
+  display: inline !important;
+}

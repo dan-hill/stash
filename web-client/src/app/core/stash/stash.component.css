@@ -50,3 +50,14 @@ nz-content {
 nz-sider {
   width: 350px;
 }
+
+:host::ng-deep .ant-card-head-wrapper {
+  vertical-align: middle !important;
+  display: inline !important;
+}
+
+:host::ng-deep .ant-card-head-title {
+  padding: 0;
+  vertical-align: middle !important;
+  display: inline !important;
+}
