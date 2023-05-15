@@ -6,6 +6,7 @@ import {Observable} from 'rxjs';
 import {Thing} from "../../models/thing/thing.model";
 import {Attribute} from "../../models/attribute/attribute.model";
 import ObjectID from "bson-objectid";
+import {Instance} from "../../models/instance/instance.model";
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,7 @@ import ObjectID from "bson-objectid";
 export class StashService {
   constructor(private apollo: Apollo) {}
 
-  getThing(_id: string): Observable<{thing: Thing}> {
+  getThing(_id: string): Observable<Thing> {
     const query = gql`
       query Query($_id: ObjectId!) {
         thing(_id: $_id) {
@@ -50,13 +51,13 @@ export class StashService {
     return this.apollo.watchQuery<{ thing: Thing }>({
       query,
       variables: { _id },
-      fetchPolicy: 'network-only', // Always fetch data from the network and not from the cache
+      fetchPolicy: 'network-only',
     }).valueChanges.pipe(
-      map(result => ({ thing: result.data?.thing }))
-    );
+      map(result =>  result.data.thing)
+      );
   }
 
-  getThings(): Observable<{things: Thing[]}> {
+  getThings(): Observable<Thing[]> {
     const query = gql`
       query GetThings {
         things {
@@ -72,8 +73,12 @@ export class StashService {
 
     return this.apollo.watchQuery<{ things: Thing[] }>({
       query,
+      fetchPolicy: 'network-only',
     }).valueChanges.pipe(
-      map(result => ({ things: result.data?.things }))
+      map(result => {
+        console.log(result);
+        return result.data.things
+      })
     );
   }
 
@@ -96,6 +101,7 @@ export class StashService {
       variables: { input },
     }).pipe(
       map(result => {
+        console.log(result)
         if (!result.data?.createThing) {
           throw new Error("createThing is undefined");
         }
@@ -194,6 +200,33 @@ export class StashService {
           throw new Error("deleteAttribute is undefined");
         }
         return { deleteAttribute: result.data.deleteAttribute };
+      })
+    );
+  }
+  createInstance(input: any): Observable<{ createInstance: Instance }> {
+    const mutation = gql`
+      mutation CreateInstance($input: InstanceInput!) {
+        createInstance(input: $input) {
+          _id
+          thing {
+            _id
+            name
+          }
+          base_quantity
+          quantity
+        }
+      }
+    `;
+
+    return this.apollo.mutate<{ createInstance: Instance }>({
+      mutation,
+      variables: { input },
+    }).pipe(
+      map(result => {
+        if (!result.data?.createInstance) {
+          throw new Error("createInstance is undefined");
+        }
+        return { createInstance: result.data.createInstance };
       })
     );
   }

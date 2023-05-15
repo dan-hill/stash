@@ -5,6 +5,8 @@ import {Router} from "@angular/router";
 import {UserService} from "../../../services/user/user.service";
 import {expand, map} from "rxjs/operators";
 import _ from "lodash";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
+import {forkJoin, Observable, of, switchMap} from "rxjs";
 
 export interface TreeNodeInterface {
   key: string;
@@ -15,6 +17,7 @@ export interface TreeNodeInterface {
   address?: string;
   children?: TreeNodeInterface[];
   parent?: TreeNodeInterface;
+  icon?: string;
 }
 
 @Component({
@@ -23,55 +26,62 @@ export interface TreeNodeInterface {
   styleUrls: ['./thing-list.component.css']
 })
 export class ThingListComponent implements OnInit{
-  @Input() things: Thing[] = [];
-  @Output() thingsChange = new EventEmitter<Thing[]>();
+  @Input() things: Observable<Thing[]> = of([]);
+  @Output() thingsChange = new EventEmitter<string>();
   public nodes: any[] = [];
 
   mapOfExpandedData: { [key: string]: TreeNodeInterface[] } = {};
-
+  visible: boolean = false;
+  validateForm!: UntypedFormGroup;
   constructor(
     private stash: StashService,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private fb: UntypedFormBuilder,
   ) { }
 
   ngOnInit(): void {
    this.makeNodes()
+    this.validateForm = this.fb.group({
+      name: [null, [Validators.required]],
+    });
 
   }
 
-  getCategories(things: Thing[]): string[] {
+  getCategories(things: Thing[]): TreeNodeInterface[] {
     return _(things)
-      .map((thing: Thing) => {
-        return thing.category;
-      })
+      .map((thing: Thing) => thing.category)
       .uniq()
+      .filter((category: string) => category !== undefined && category !== null && category !== '')
+      .map((category: string) => { return {key: category, name: category, children: [], icon: 'folder'} as TreeNodeInterface;})
+      .push({key: 'stash', name: 'Stash', children: [], icon: 'folder'} as TreeNodeInterface)
+      .map((category: TreeNodeInterface) => {return {...category, children: this.getCategoryChildren(things, category)}})
       .value();
   }
-
-  getCategoryChildren(category: string): Thing[] {
-    return this.things.filter((thing: Thing) => {
-      console.log(thing.category)
-      return thing.category === category});
+  getCategoryChildren(things: Thing[], category: TreeNodeInterface): TreeNodeInterface[] {
+    if (this.things === null) return [];
+    return things.filter((thing: Thing) => {
+      if (category.key === 'stash') return thing.category === undefined || thing.category === null || thing.category === '';
+      return thing.category === category.key;
+    }).map((thing: Thing) => { return {key: thing._id, name: thing.name, children: undefined, parent: category, expand: false, icon: 'file'} as TreeNodeInterface;});
   }
 
 
   makeNodes(): void {
-    const categories = this.getCategories(this.things).map((category: any) => {
-      return { key: category, name: category, expand: false, children: [] };
+    this.things.subscribe((things: Thing[]) => {
+      const categories: TreeNodeInterface[] = this.getCategories(things);
+      categories.forEach((category: TreeNodeInterface) => {
+        this.mapOfExpandedData[category.key] = this.convertTreeToList(category);
+      } );
+      this.nodes = categories;
     });
 
-    this.nodes = categories.map((category: any) => {
-      return {...category, children: this.getCategoryChildren(category.key).map((thing: Thing) => { return {key: thing._id, name: thing.name }})};
-    } );
-
-    this.nodes.forEach(item => {
-      this.mapOfExpandedData[item.key] = this.convertTreeToList(item);
-    });
   }
 
   ngOnChanges() {
+    console.log('ngOnChanges')
     this.makeNodes();
+    console.log(this.nodes)
   }
 
   collapse(array: TreeNodeInterface[], data: TreeNodeInterface, $event: boolean): void {
@@ -119,7 +129,27 @@ export class ThingListComponent implements OnInit{
     console.log('expand');
     console.log(node);
   }
-  openThing(id: string) {
-    this.router.navigateByUrl(`/stash/${id}`);
+  openThing(item: any) {
+    if (!item.children || item.children.length === 0) {
+      this.router.navigateByUrl(`/stash/${item.key}`);
+    }
+  }
+
+  change(value: boolean): void {
+    console.log(value);
+  }
+
+  saveThing() {
+    console.log(this.validateForm.value);
+    this.stash.createThing(this.validateForm.value).subscribe({
+      next: (result) =>{
+        console.log('Success:', result.createThing);
+        this.validateForm.reset();
+        this.thingsChange.emit('changed');
+      },
+      error: (error) => {
+        console.error('Error:', error);
+      }
+    });
   }
 }

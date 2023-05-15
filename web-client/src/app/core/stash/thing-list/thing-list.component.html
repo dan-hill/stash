@@ -1,4 +1,20 @@
-<nz-card nzTitle="Things">
+<nz-layout>
+  <stash-header [title]="'things'">
+    <button
+      nz-button
+      nzType="default"
+      [nzSize]="'small'"
+      nzShape="circle"
+      nz-popover
+      (nzPopoverVisibleChange)="change($event)"
+      [(nzPopoverVisible)]="visible"
+      [nzPopoverContent]="contentTemplate"
+      nzPopoverPlacement="bottom"
+      nzPopoverTrigger="click">
+      <span nz-icon nzType="file-add" nzTheme="outline"></span>
+    </button>
+  </stash-header>
+  <div class="thing-list-container">
 <nz-table #expandTable [nzData]="nodes" nzTableLayout="fixed" [nzSize]="'small'" [nzShowPagination]="false">
   <thead>
   <tr style="display: none">
@@ -15,13 +31,34 @@
           [nzShowExpand]="!!item.children"
           [(nzExpand)]="item.expand"
           (nzExpandChange)="collapse(mapOfExpandedData[data.key], item, $event)"
-          (click)="openThing(item.key)"
+          (click)="openThing(item)"
         >
-      {{ item.name }}
+          <span nz-icon nzType="{{item.icon}}" nzTheme="outline" style="margin-right: 8px"></span>{{ item.name }}
         </td>
       </tr>
     </ng-container>
   </ng-container>
   </tbody>
 </nz-table>
-</nz-card>
+  </div>
+</nz-layout>
+
+
+  <ng-template #contentTemplate>
+    <form nz-form [nzLayout]="'inline'" [formGroup]="validateForm" (ngSubmit)="saveThing()">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Please input your username!">
+          <nz-input-group>
+            <input formControlName="name" nz-input placeholder="Name" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control>
+          <button nz-button nzType="primary" [disabled]="!validateForm.valid" >Save</button>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-template>
+
+

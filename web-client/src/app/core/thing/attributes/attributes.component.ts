@@ -3,10 +3,8 @@ import {Attribute} from "../../../models/attribute/attribute.model";
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Thing} from "../../../models/thing/thing.model";
 import {StashService} from "../../../services/stash/stash.service";
-import {Instance} from "../../../models/instance/instance.model";
-import {Source} from "../../../models/source/source.model";
-import ObjectID from "bson-objectid";
 import {switchMap} from "rxjs";
+
 @Component({
   selector: 'app-attributes',
   templateUrl: './attributes.component.html',
@@ -89,5 +87,6 @@ updateAttribute(id: string, input: any): void {
       });
     }
   }
+
 
 }

@@ -16,7 +16,7 @@ import {KtdGridLayout, ktdTrackById} from "@katoid/angular-grid-layout";
   styleUrls: ['./stash.component.css']
 })
 export class StashComponent implements OnInit {
-  public things: Observable<{ things: Thing[] }> = new Observable<{ things: Thing[] }>();
+  public things: Observable<Thing[]> = new Observable<Thing[]>();
   public user: Observable<User> = new Observable<User>();
   cols: number = 100;
   rowHeight: number = 10;
@@ -40,5 +40,10 @@ export class StashComponent implements OnInit {
 
   onLayoutUpdated(layout: KtdGridLayout) {
     this.layout = layout;
+  }
+
+  onThingsChange($event: string) {
+    console.log($event);
+    this.things = this.stash.getThings();
   }
 }

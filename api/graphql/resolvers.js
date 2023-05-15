@@ -63,7 +63,11 @@ const resolvers = {
         },
     },
     Mutation: {
-        createThing: async (_, { input }) => await Thing.create(input),
+        createThing: async (_, { input }) => {
+            const thing = new Thing(input);
+            await thing.save();
+            return thing;
+        },
         createInstance: async (_, { input }) => await Instance.create(input),
         createSource: async (_, { input }) => await Source.create(input),
         createAttribute: async (_, {thingId, input }) => {

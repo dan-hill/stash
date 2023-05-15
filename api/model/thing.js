@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 const ThingSchema = new mongoose.Schema({
-    _id: mongoose.Types.ObjectId,
     name: {
         type: String,
         default: '',

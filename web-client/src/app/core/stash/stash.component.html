@@ -1,20 +1,17 @@
 <nz-layout class="stash-container">
-  <nz-header>
-    <span class="">stash</span><span class="spacer"> </span><span class="actions"><ng-container
-    *ngIf="user | async as user">{{user.email}}</ng-container></span>
-  </nz-header>
-  <nz-content class="outer-content">
+  <stash-header title="stash">
+    <ng-container *ngIf="user | async as user">{{user.email}}</ng-container>
+  </stash-header>
     <nz-layout class="content-container">
       <nz-sider [nzWidth]="350">
-        <ng-container *ngIf="things | async as things">
-          <app-thing-list [(things)]="things.things"></app-thing-list>
-        </ng-container>
+        <app-thing-list [things]="things" (thingsChange)="onThingsChange($event)"></app-thing-list>
+
       </nz-sider>
       <router-outlet></router-outlet>
     </nz-layout>
-  </nz-content>
   <nz-footer>
     <nz-breadcrumb [nzAutoGenerate]="true"></nz-breadcrumb>
   </nz-footer>
 
 </nz-layout>
+

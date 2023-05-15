@@ -1,7 +1,18 @@
 <nz-layout>
-  <nz-header>
-    <span class="">stash</span>
-  </nz-header>
+  <stash-header >
+    <button
+      nz-button
+      nzType="default"
+      [nzSize]="'small'"
+      nzShape="circle"
+      nz-popover
+      (nzPopoverVisibleChange)="change($event)"
+      [(nzPopoverVisible)]="visible"
+      [nzPopoverContent]="contentTemplate"
+      nzPopoverTrigger="click">
+      <span nz-icon nzType="file-add" nzTheme="outline"></span>
+  </button>
+  </stash-header>
   <nz-content class="tab-content">
     <div class="tab-container">
   <nz-table class="attribute-table" #editRowTable [nzData]="thing?.attributes ?? []" [nzSize]="'small'" [nzFrontPagination]="false">
@@ -37,19 +48,7 @@
   </nz-content>
 </nz-layout>
 
-<ng-template #extraTemplate>
-  <button
-    nz-button
-    nzType="default"
-    [nzSize]="'small'"
-    nzShape="circle"
-    nz-popover
-    (nzPopoverVisibleChange)="change($event)"
-    [(nzPopoverVisible)]="visible"
-    [nzPopoverContent]="contentTemplate"
-    nzPopoverTrigger="click">
-      <span nz-icon nzType="file-add" nzTheme="outline"></span>
-  </button>
+
   <ng-template #contentTemplate>
     <form nz-form [nzLayout]="'inline'" [formGroup]="validateForm" (ngSubmit)="saveAttribute()">
       <nz-form-item>
@@ -62,7 +61,7 @@
       <nz-form-item>
         <nz-form-control nzErrorTip="Please input your Password!">
           <nz-input-group nzPrefixIcon="lock">
-            <input formControlName="value" placeholder="Value" />
+            <input formControlName="value" nz-input placeholder="Value" />
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
@@ -73,4 +72,3 @@
       </nz-form-item>
     </form>
   </ng-template>
-</ng-template>

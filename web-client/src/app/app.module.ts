@@ -34,6 +34,8 @@ import {NzPopoverModule} from "ng-zorro-antd/popover";
 import {AuthInterceptor} from "./services/auth/auth.interceptor";
 import {ThingListComponent} from "./core/stash/thing-list/thing-list.component";
 import {NzTabsModule} from "ng-zorro-antd/tabs";
+import {StashHeaderComponent} from "./core/components/stash-header/stash-header.component";
+import {NzCascaderModule} from "ng-zorro-antd/cascader";
 
 registerLocaleData(en);
 
@@ -46,7 +48,8 @@ registerLocaleData(en);
     AttributesComponent,
     SourcesComponent,
     InstancesComponent,
-    ThingListComponent
+    ThingListComponent,
+    StashHeaderComponent,
   ],
   imports: [
     BrowserModule,
@@ -71,6 +74,7 @@ registerLocaleData(en);
     NzPopconfirmModule,
     NzPopoverModule,
     NzTabsModule,
+    NzCascaderModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
