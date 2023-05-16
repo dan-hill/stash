@@ -55,6 +55,9 @@ export class ThingComponent implements OnInit {
   }
 
   onThingChange($event: string) {
-
+    this.route.params.subscribe(params => {
+      const id = params['id'];
+      this.thing = this.stash.getThing(id)
+    });
   }
 }

@@ -1,11 +1,11 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Attribute} from "../../../models/attribute/attribute.model";
-import {Instance} from "../../../models/instance/instance.model";
-import {Thing} from "../../../models/thing/thing.model";
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
-import {StashService} from "../../../services/stash/stash.service";
-import {NzCascaderOption} from "ng-zorro-antd/cascader";
-import {EMPTY, Observable, of} from "rxjs";
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Attribute } from "../../../models/attribute/attribute.model";
+import { Instance } from "../../../models/instance/instance.model";
+import { Thing } from "../../../models/thing/thing.model";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { StashService } from "../../../services/stash/stash.service";
+import { NzCascaderOption } from "ng-zorro-antd/cascader";
+import { EMPTY, Observable, of } from "rxjs";
 
 @Component({
   selector: 'app-instances',
@@ -15,14 +15,21 @@ import {EMPTY, Observable, of} from "rxjs";
 export class InstancesComponent implements OnInit {
   @Input() thing: Observable<Thing | null> = EMPTY;
   @Output() thingChange = new EventEmitter<string>();
+
   @Input() things: Observable<Thing[]> = of([]);
   @Output() thingsChange = new EventEmitter<string>();
+
+  instances: Instance[] = [];
+
   editId: string | null = null;
   visible: boolean = false;
-  validateForm!: UntypedFormGroup;
-  constructor(private fb: UntypedFormBuilder, private stash: StashService) {
+  validateForm!: FormGroup;
+  nzOptions: NzCascaderOption[] | null = null;
+  values: string[] | null = null;
 
-  }
+  constructor(
+    private fb: FormBuilder,
+    private stash: StashService) { }
 
   mapThingsToOptions(things: Thing[] | null): NzCascaderOption[] {
     if (things === null) return [];
@@ -31,19 +38,20 @@ export class InstancesComponent implements OnInit {
       return {
         value: thing._id,
         label: thing.name,
-        children: []
+        isLeaf: true
       }
     });
   }
+
   ngOnInit() {
     this.validateForm = this.fb.group({
-      relationship: [null, [Validators.required]],
-      key: [null, [Validators.required]]
+      targetThing: [null, [Validators.required]]
     });
+
     this.thing.subscribe(thing => {
-      this.getInstances(thing);
-      console.log(thing)
-    } );
+      this.instances = this.getInstances(thing);
+    });
+
     setTimeout(() => {
       this.things.subscribe(things => {
         this.nzOptions = this.mapThingsToOptions(things);
@@ -51,18 +59,19 @@ export class InstancesComponent implements OnInit {
     }, 100);
   }
 
-  instances: Instance[] = [];
-  getInstances(thing: Thing | null): void {
-    if (thing === null) return;
-    this.thing.subscribe(thing => {
-      this.instances = thing?.instances ?? [];
-    })
+  getInstances(thing: Thing | null): Instance[] {
+    return thing?.instances ?? [];
   }
-  ngOnChanges() {
-    this.thing.subscribe(thing => {
-      this.getInstances(thing);
-    } );
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log(changes)
+    if (changes['thing']) {
+      this.thing.subscribe(thing => {
+        this.instances = this.getInstances(thing);
+      });
+    }
   }
+
   change(value: boolean): void {
     console.log(value);
   }
@@ -75,17 +84,16 @@ export class InstancesComponent implements OnInit {
     this.editId = null;
   }
 
-
   deleteRow(id: string): void {
   }
 
-  saveInstance() {
+  createInstance() {
     this.thing.subscribe(thing => {
       if (thing === null) return;
-      console.log(this.validateForm.value)
-      console.log(thing._id);
-      this.stash.createInstance(thing._id, {thing: this.validateForm.value.key[0]}).subscribe({
+
+      this.stash.createInstance(thing._id, { thing: this.validateForm.value.targetThing[0] }).subscribe({
         next: query => {
+          this.thingChange.emit('changed');
           console.log(query);
         },
         error: error => {
@@ -95,10 +103,7 @@ export class InstancesComponent implements OnInit {
     })
   }
 
-  nzOptions: NzCascaderOption[] | null = null;
-  values: string[] | null = null;
-
   onChanges($event: any) {
-
+    console.log('Selected value:', $event);
   }
 }

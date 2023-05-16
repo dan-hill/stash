@@ -24,13 +24,6 @@
     </tr>
     </thead>
     <tbody>
-    <tr>
-      <td>
-        Stash
-      </td>
-      <td>sdf</td>
-      <td>sdfffe</td>
-    </tr>
     <tr *ngFor="let instance of instanceTable.data" class="editable-row">
       <td>
         <div class="editable-cell" [hidden]="editId === instance._id" (click)="startEdit(instance._id)">
@@ -46,22 +39,14 @@
   </nz-table>
 </nz-layout>
  <ng-template #contentTemplate>
-   <form nz-form [nzLayout]="'inline'" [formGroup]="validateForm" (ngSubmit)="saveInstance()">
+   <form nz-form [nzLayout]="'inline'" [formGroup]="validateForm" (ngSubmit)="createInstance()">
      <nz-form-item>
-       <nz-form-control nzErrorTip="Please input your username!">
-         <nz-input-group nzPrefixIcon="user">
-           <input formControlName="relationship" nz-input placeholder="relationship" />
-         </nz-input-group>
-       </nz-form-control>
-     </nz-form-item>
-     <nz-form-item>
-       <nz-form-control nzErrorTip="Please input your Password!">
+       <nz-form-control>
          <nz-cascader
-           formControlName="key"
+           formControlName="targetThing"
            [nzOptions]="nzOptions"
-           [(ngModel)]="values"
            [nzShowSearch]="true"
-           (ngModelChange)="onChanges($event)"
+           (nzSelect)="onChanges($event)"
          ></nz-cascader>
        </nz-form-control>
      </nz-form-item>
