@@ -24,10 +24,17 @@
     </tr>
     </thead>
     <tbody>
+    <tr>
+      <td>
+        Stash
+      </td>
+      <td>sdf</td>
+      <td>sdfffe</td>
+    </tr>
     <tr *ngFor="let instance of instanceTable.data" class="editable-row">
       <td>
         <div class="editable-cell" [hidden]="editId === instance._id" (click)="startEdit(instance._id)">
-          {{ instance.thing?.name }}
+          ∈ {{ instance.thing?.name }}
         </div>
         <input *ngIf="instance.thing" [hidden]="editId !== instance._id" type="text" nz-input [(ngModel)]="instance.thing.name" (blur)="stopEdit()" />      </td>
 
