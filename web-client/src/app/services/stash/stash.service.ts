@@ -37,6 +37,7 @@ export class StashService {
           }
           instances {
             _id
+            name
             thing {
               _id
               name
@@ -80,6 +81,7 @@ export class StashService {
           }
           instances {
             _id
+            name
             thing {
               _id
               name
@@ -228,6 +230,7 @@ export class StashService {
       mutation CreateInstance($owner: ObjectId, $input: InstanceInput!) {
         createInstance(owner: $owner, input: $input) {
           _id
+          name
           thing {
             _id
             name
@@ -251,4 +254,23 @@ export class StashService {
     );
   }
 
+  deleteInstance(instanceId: string, thingId: string): Observable<{ deleteInstance: string }> {
+    const mutation = gql`
+      mutation DeleteInstance($instanceId: ObjectId, $thingId: ObjectId) {
+        deleteInstance(instanceId: $instanceId, thingId: $thingId)
+      }
+    `;
+
+    return this.apollo.mutate<{ deleteInstance: string }>({
+      mutation,
+      variables: { instanceId, thingId },
+    }).pipe(
+      map(result => {
+        if (result.data?.deleteInstance === undefined) {
+          throw new Error("deleteInstance is undefined");
+        }
+        return { deleteInstance: result.data.deleteInstance };
+      })
+    );
+  }
 }

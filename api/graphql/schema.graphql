@@ -14,6 +14,7 @@ type Thing {
 
 type Instance {
     _id: ObjectId!
+    name: String
     thing: Thing
     base_quantity: Int
     quantity: Int
@@ -54,6 +55,7 @@ input ThingInput {
 }
 
 input InstanceInput {
+    name: String
     thing: ObjectId
     base_quantity: Int
     quantity: Int
@@ -82,5 +84,7 @@ type Mutation {
     createAttribute(thingId: ObjectId, input: AttributeInput): Attribute
     updateAttribute(attributeId: ObjectId, input: AttributeInput): Attribute
     deleteAttribute(thingId: ObjectId, attributeId: ObjectId): ObjectId
+    deleteInstance(thingId: ObjectId, instanceId: ObjectId): ObjectId
+
 
 }

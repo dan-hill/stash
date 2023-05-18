@@ -1,11 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
-import { Attribute } from "../../../models/attribute/attribute.model";
 import { Instance } from "../../../models/instance/instance.model";
 import { Thing } from "../../../models/thing/thing.model";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { StashService } from "../../../services/stash/stash.service";
 import { NzCascaderOption } from "ng-zorro-antd/cascader";
-import { EMPTY, Observable, of } from "rxjs";
+import {EMPTY, Observable, of, switchMap, take} from "rxjs";
 
 @Component({
   selector: 'app-instances',
@@ -45,7 +44,7 @@ export class InstancesComponent implements OnInit {
 
   ngOnInit() {
     this.validateForm = this.fb.group({
-      targetThing: [null, [Validators.required]]
+      name: [null, [Validators.required]]
     });
 
     this.thing.subscribe(thing => {
@@ -64,7 +63,7 @@ export class InstancesComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log(changes)
+    console.log('changes', changes)
     if (changes['thing']) {
       this.thing.subscribe(thing => {
         this.instances = this.getInstances(thing);
@@ -84,17 +83,30 @@ export class InstancesComponent implements OnInit {
     this.editId = null;
   }
 
-  deleteRow(id: string): void {
-  }
-
   createInstance() {
-    this.thing.subscribe(thing => {
+    this.thing.pipe(take(1)).subscribe(thing => {
       if (thing === null) return;
 
-      this.stash.createInstance(thing._id, { thing: this.validateForm.value.targetThing[0] }).subscribe({
+      this.stash.createInstance(thing._id, { name: this.validateForm.value.name }).subscribe({
+        next: query => {
+          console.log('created instance');
+          this.thingChange.emit('changed');
+        },
+        error: error => {
+          console.error(error);
+        }
+      });
+    })
+  }
+
+  deleteInstance(id: string): void {
+    this.thing.pipe(take(1)).subscribe(thing => {
+      if (thing === null) return;
+      this.stash.deleteInstance(id, thing._id ).subscribe({
         next: query => {
           this.thingChange.emit('changed');
-          console.log(query);
+          this.visible = false;
+          console.log('deleted instance');
         },
         error: error => {
           console.error(error);

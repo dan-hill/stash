@@ -67,7 +67,8 @@ updateAttribute(id: string, input: any): void {
       error: error => {
         console.error(error);
       }
-    });  }
+    });
+  }
 
   change(value: boolean): void {
     console.log(value);

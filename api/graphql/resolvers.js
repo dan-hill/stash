@@ -69,12 +69,8 @@ const resolvers = {
             return thing;
         },
         createInstance: async (_, { owner, input }) =>{
-            console.log('createInstance', owner, input);
-            console.log('createInstance', input);
             const instance = await Instance.create(input)   ;
-            console.log('createInstance', instance);
             const thing =  await Thing.findById(new mongoose.Types.ObjectId(owner)).exec();
-            console.log('createInstance', thing);
             thing.instances.push(instance._id);
             await thing.save();
             return instance;
@@ -112,6 +108,20 @@ const resolvers = {
             await thing.save();
             await Attribute.deleteOne({ _id: attribute._id });
             return attributeId;
+        },
+        deleteInstance: async (_, { instanceId, thingId }) => {
+            const instance = await Instance.findById(new mongoose.Types.ObjectId(instanceId)).exec();
+            if (!instance) {
+                throw new Error('Instance not found');
+            }
+            const thing = await Thing.findById(new mongoose.Types.ObjectId(thingId)).exec();
+            if (!thing) {
+                throw new Error('Thing not found');
+            }
+            thing.instances = thing.instances.filter(attrId => !attrId.equals(instance._id));
+            await thing.save();
+            await Instance.deleteOne({ _id: instance._id });
+            return instanceId;
         },
 
 
