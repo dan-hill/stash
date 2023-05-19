@@ -25,6 +25,7 @@ export class InstancesComponent implements OnInit {
   validateForm!: FormGroup;
   nzOptions: NzCascaderOption[] | null = null;
   values: string[] | null = null;
+  demoValue: number = 0;
 
   constructor(
     private fb: FormBuilder,
