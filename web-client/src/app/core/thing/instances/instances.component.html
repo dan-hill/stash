@@ -1,17 +1,6 @@
  <nz-layout>
    <stash-header>
-     <button
-       nz-button
-       nzType="default"
-       [nzSize]="'small'"
-       nzShape="circle"
-       nz-popover
-       (nzPopoverVisibleChange)="change($event)"
-       [(nzPopoverVisible)]="visible"
-       [nzPopoverContent]="contentTemplate"
-       nzPopoverTrigger="click">
-       <span nz-icon nzType="file-add" nzTheme="outline"></span>
-     </button>
+
    </stash-header>
 
   <nz-table class="attribute-table" #instanceTable [nzData]="instances" [nzSize]="'small'">
@@ -28,56 +17,20 @@
     <tbody>
     <tr *ngFor="let instance of instanceTable.data" class="editable-row">
       <td>
-        <div class="editable-cell" [hidden]="editId === instance._id" >
-          {{ instance.name }}
-        </div>
-        <input *ngIf="instance.name" [hidden]="editId !== instance._id" type="text" nz-input [(ngModel)]="instance.name" (blur)="stopEdit()" />
+        {{ instance.name }}
       </td>
       <td>
-        <div class="editable-cell" [hidden]="editId === instance._id" >
-          {{ instance.thing?.name ?? ''}}
-        </div>
-        <nz-cascader [hidden]="editId !== instance._id"
-          formControlName="targetThing"
-          [nzOptions]="nzOptions"
-          [nzShowSearch]="true"
-          (nzSelect)="onChanges($event)">
-        </nz-cascader>
+        {{ instance.thing?.name ?? ''}}
       </td>
       <td>
         <nz-input-number [(ngModel)]="demoValue" [nzMin]="1" [nzMax]="10" [nzStep]="1"></nz-input-number>
       </td>
       <td nzAlign="right">
+        <button nz-button [nzType]="'primary'" nzGhost [nzSize]="'small'" nzShape="circle" (click)="showModal(instance)">        <span nz-icon nzType="edit" nzTheme="outline"></span></button>
 
-        <ng-container *ngIf="editId === instance._id">
-          <button nz-button nzType="primary" [nzSize]="'small'" nzShape="circle" (click)="stopEdit()" style="margin-right: 10px"><span nz-icon nzType="checkmark" nzTheme="outline"></span></button>
-          <button nz-button nzType="primary" [nzSize]="'small'" nzShape="circle" (click)="stopEdit()" style="margin-right: 10px"><span nz-icon nzType="cancel" nzTheme="outline"></span></button>
-          |
-        </ng-container>
-        <button nz-button nzType="primary" [nzSize]="'small'" nzShape="circle" (click)="startEdit(instance._id)"style="margin-right: 10px"><span nz-icon nzType="edit" nzTheme="outline"></span></button>
-        <button nz-button nzType="primary" nzDanger [nzSize]="'small'" nzShape="circle" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteInstance(instance._id)"><span nz-icon nzType="delete" nzTheme="outline"></span></button>
       </td>
     </tr>
     </tbody>
   </nz-table>
 </nz-layout>
- <ng-template #contentTemplate>
-   <form nz-form [nzLayout]="'inline'" [formGroup]="validateForm" (ngSubmit)="createInstance()">
-     <nz-form-item>
-       <nz-form-control>
-         <!-- <nz-cascader
-           formControlName="targetThing"
-           [nzOptions]="nzOptions"
-           [nzShowSearch]="true"
-           (nzSelect)="onChanges($event)"
-         ></nz-cascader> -->
-          <input nz-input formControlName="name" placeholder="Instance Name" />
-       </nz-form-control>
-     </nz-form-item>
-     <nz-form-item>
-       <nz-form-control>
-         <button nz-button nzType="primary" [disabled]="!validateForm.valid" >Save</button>
-       </nz-form-control>
-     </nz-form-item>
-   </form>
- </ng-template>
+<app-edit-instance [(isVisible)]="visible" [thing]="thing" [things]="things" [instance]="editingInstance"></app-edit-instance>

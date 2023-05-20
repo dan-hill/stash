@@ -37,6 +37,8 @@ import {NzTabsModule} from "ng-zorro-antd/tabs";
 import {StashHeaderComponent} from "./core/components/stash-header/stash-header.component";
 import {NzCascaderModule} from "ng-zorro-antd/cascader";
 import {NzInputNumberModule} from "ng-zorro-antd/input-number";
+import {NzModalModule} from "ng-zorro-antd/modal";
+import {EditInstanceComponent} from "./core/thing/instances/edit-instance/edit-instance.component";
 
 registerLocaleData(en);
 
@@ -51,33 +53,35 @@ registerLocaleData(en);
     InstancesComponent,
     ThingListComponent,
     StashHeaderComponent,
+    EditInstanceComponent
   ],
-    imports: [
-        BrowserModule,
-        FormsModule,
-        HttpClientModule,
-        BrowserAnimationsModule,
-        AppRoutingModule,
-        IconsProviderModule,
-        NzLayoutModule,
-        NzMenuModule,
-        GraphQLModule,
-        NzCardModule,
-        NzFormModule,
-        NzInputModule,
-        NzCheckboxModule,
-        NzButtonModule,
-        ReactiveFormsModule,
-        NzBreadCrumbModule,
-        NzTreeModule,
-        KtdGridModule,
-        NzTableModule,
-        NzPopconfirmModule,
-        NzPopoverModule,
-        NzTabsModule,
-        NzCascaderModule,
-        NzInputNumberModule,
-    ],
+  imports: [
+    BrowserModule,
+    FormsModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    AppRoutingModule,
+    IconsProviderModule,
+    NzLayoutModule,
+    NzMenuModule,
+    GraphQLModule,
+    NzCardModule,
+    NzFormModule,
+    NzInputModule,
+    NzCheckboxModule,
+    NzButtonModule,
+    ReactiveFormsModule,
+    NzBreadCrumbModule,
+    NzTreeModule,
+    KtdGridModule,
+    NzTableModule,
+    NzPopconfirmModule,
+    NzPopoverModule,
+    NzTabsModule,
+    NzCascaderModule,
+    NzInputNumberModule,
+    NzModalModule,
+  ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: NZ_I18N, useValue: en_US }

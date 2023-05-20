@@ -1,0 +1,70 @@
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="modalTitle"
+  [nzContent]="modalContent"
+  [nzFooter]="modalFooter"
+  (nzOnCancel)="handleCancel()"
+>
+  <ng-template #modalTitle>{{(instance | async)?.name ?? 'New Instance'}}</ng-template>
+
+  <ng-template #modalContent>
+
+    <form nz-form [formGroup]="validateForm">
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="name">Instance Name</nz-form-label>
+        <nz-form-control>
+          <input nz-input
+                 formControlName="name"
+                 type="text" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="targetThing">Container</nz-form-label>
+        <nz-form-control>
+          <nz-cascader formControlName="targetThing"
+                       [nzOptions]="nzOptions"
+                       [nzShowSearch]="true"
+                       (nzSelect)="onChanges($event)">
+          </nz-cascader>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" >Container</nz-form-label>
+        <nz-form-control>
+          <nz-input-number formControlName="quantity"
+                           [nzMin]="1"
+                           [nzMax]="10"
+                           [nzStep]="1">
+          </nz-input-number>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+
+
+
+  </ng-template>
+
+  <ng-template #modalFooter>
+
+
+    <button nz-button style="float: left"
+            nzGhost
+            nzDanger
+            nzType="primary"
+            nzShape="circle"
+            nz-popconfirm
+            nzPopconfirmTitle="Sure to delete?"
+            (nzOnConfirm)="deleteInstance()"
+            [nzLoading]="isConfirmLoading">
+      <span  nz-icon nzType="delete" nzTheme="outline"></span>
+    </button>
+    <button nz-button
+            nzGhost
+            nzType="primary"
+            (click)="handleOk()"
+            [nzLoading]="isConfirmLoading">
+      <span nz-icon nzType="save" nzTheme="outline"></span>
+      Save
+    </button>
+  </ng-template>
+</nz-modal>
