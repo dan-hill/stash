@@ -1,16 +1,27 @@
  <nz-layout>
-   <stash-header>
-
+   <stash-header style="border-bottom-color: #073642; border-bottom-style: solid; border-bottom-width: 1px">
+     <button
+       nz-button
+       [nzType]="'primary'"
+       nzGhost [nzSize]="'small'"
+       nzShape="circle"
+       (click)="createModal(tplTitle, tplContent, createInstanceFooterTemplate, null)">
+       <span
+         nz-icon
+         nzType="plus"
+         zTheme="outline"
+         style="color: #2aa198">
+       </span>
+     </button>
    </stash-header>
-
   <nz-table class="attribute-table" #instanceTable [nzData]="instances" [nzSize]="'small'">
     <thead>
-    <tr style="display: none">
-      <th nzLeft></th>
-
-      <th nzRight nzWidth="150px"></th>
-      <th nzRight nzWidth="30px" ></th>
-      <th nzWidth="200px" ></th>
+    <tr>
+      <th>Name</th>
+      <th nzWidth="150px">Container</th>
+      <th nzWidth="30px" >Quantity</th>
+      <th nzWidth="30px" >Minimum</th>
+      <th nzWidth="30px"></th>
 
     </tr>
     </thead>
@@ -20,17 +31,122 @@
         {{ instance.name }}
       </td>
       <td>
-        {{ instance.thing?.name ?? ''}}
+        {{ instance.instance?.name ?? ''}}
       </td>
       <td>
-        <nz-input-number [(ngModel)]="demoValue" [nzMin]="1" [nzMax]="10" [nzStep]="1"></nz-input-number>
+        {{ instance.quantity }}
+      </td>
+      <td>
+        {{ instance.minimum_quantity }}
       </td>
       <td nzAlign="right">
-        <button nz-button [nzType]="'primary'" nzGhost [nzSize]="'small'" nzShape="circle" (click)="showModal(instance)">        <span nz-icon nzType="edit" nzTheme="outline"></span></button>
-
+        <button nz-button [nzType]="'primary'" nzGhost [nzSize]="'small'" nzShape="circle" (click)="createModal(tplTitle, tplContent, tplFooter, instance)">        <span nz-icon nzType="edit" nzTheme="outline"></span></button>
       </td>
     </tr>
     </tbody>
   </nz-table>
 </nz-layout>
-<app-edit-instance [(isVisible)]="visible" [thing]="thing" [things]="things" [instance]="editingInstance"></app-edit-instance>
+
+
+ <ng-template #tplTitle>{{modalTitle}}</ng-template>
+
+ <ng-template #tplContent let-params>
+
+   <form nz-form [formGroup]="validateForm">
+     <nz-form-item>
+       <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="name">Instance Name</nz-form-label>
+       <nz-form-control>
+         <input nz-input
+                formControlName="name"
+                type="text"
+                />
+       </nz-form-control>
+     </nz-form-item>
+     <nz-form-item>
+       <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="targetThing">Container</nz-form-label>
+       <nz-form-control>
+         <nz-cascader formControlName="instance"
+                      [nzOptions]="nzOptions"
+                      [nzShowSearch]="true"
+                      (nzSelect)="onChanges($event)">
+         </nz-cascader>
+       </nz-form-control>
+     </nz-form-item>
+     <nz-form-item>
+       <nz-form-label [nzSm]="6" [nzXs]="24" >Quantity</nz-form-label>
+       <nz-form-control>
+         <nz-input-number formControlName="quantity"
+                          [nzMin]="1"
+                          [nzMax]="10"
+                          [nzStep]="1">
+         </nz-input-number>
+       </nz-form-control>
+     </nz-form-item>
+     <nz-form-item>
+       <nz-form-label [nzSm]="6" [nzXs]="24" >Minimum Quantity</nz-form-label>
+       <nz-form-control>
+         <nz-input-number formControlName="minimum_quantity"
+                          [nzMin]="1"
+                          [nzMax]="10"
+                          [nzStep]="1">
+         </nz-input-number>
+       </nz-form-control>
+     </nz-form-item>
+     <nz-form-item>
+       <nz-form-label [nzSm]="6" [nzXs]="24" >Transferable</nz-form-label>
+       <nz-form-control>
+         <nz-switch formControlName="transferable"></nz-switch>
+       </nz-form-control>
+     </nz-form-item>
+   </form>
+
+
+
+ </ng-template>
+
+ <ng-template #tplFooter let-ref="modalRef">
+
+
+   <button nz-button style="float: left"
+           nzGhost
+           nzDanger
+           nzType="primary"
+           nzShape="circle"
+           nz-popconfirm
+           nzPopconfirmTitle="Sure to delete?"
+           (nzOnConfirm)="deleteInstance(ref)">
+
+     <span  nz-icon nzType="delete" nzTheme="outline"></span>
+   </button>
+   <button nz-button nzType="primary" (click)="destroyTplModal(ref)" [nzLoading]="tplModalButtonLoading">Cancel</button>
+   <button nz-button
+           nzGhost
+           nzType="primary"
+           (click)="updateInstance(ref)">
+     <span nz-icon nzType="save" nzTheme="outline"></span>
+     Save
+   </button>
+ </ng-template>
+
+ <ng-template #createInstanceFooterTemplate let-ref="modalRef">
+
+
+   <button nz-button style="float: left"
+           nzGhost
+           nzDanger
+           nzType="primary"
+           nzShape="circle"
+           nz-popconfirm
+           nzPopconfirmTitle="Sure to delete?">
+
+     <span  nz-icon nzType="delete" nzTheme="outline"></span>
+   </button>
+   <button nz-button nzType="primary" (click)="destroyTplModal(ref)" [nzLoading]="tplModalButtonLoading">Cancel</button>
+   <button nz-button
+           nzGhost
+           nzType="primary"
+           (click)="createInstance(ref)">
+     <span nz-icon nzType="save" nzTheme="outline"></span>
+     Save
+   </button>
+ </ng-template>

@@ -5,9 +5,10 @@ export class Instance implements Deserializable{
   constructor(
     public _id: string = '',
     public name: string = '',
-    public thing: Thing = new Thing(),
-    public base_quantity: number = 0,
+    public instance: Instance | null = null,
+    public minimum_quantity: number = 0,
     public quantity: number = 0,
+    public transferable: boolean = false,
   ) {}
 
   deserialize(input: any): this {

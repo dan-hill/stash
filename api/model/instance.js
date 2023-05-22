@@ -2,12 +2,13 @@ import mongoose from "mongoose";
 
 const InstanceSchema = new mongoose.Schema({
     name: String,
-    thing: {
+    instance: {
         type: String,
-        ref: 'Thing'
+        ref: 'Instance'
     },
-    base_quantity: Number,
+    minimum_quantity: Number,
     quantity: Number,
+    transferable: Boolean,
 })
 
 export const Instance = mongoose.model('Instance', InstanceSchema);

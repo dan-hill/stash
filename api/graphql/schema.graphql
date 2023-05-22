@@ -15,9 +15,10 @@ type Thing {
 type Instance {
     _id: ObjectId!
     name: String
-    thing: Thing
-    base_quantity: Int
+    instance: Instance
     quantity: Int
+    minimum_quantity: Int
+    transferable: Boolean
 }
 
 type Source {
@@ -56,9 +57,10 @@ input ThingInput {
 
 input InstanceInput {
     name: String
-    thing: ObjectId
-    base_quantity: Int
+    instance: ObjectId
     quantity: Int
+    minimum_quantity: Int
+    transferable: Boolean
 }
 
 input SourceInput {
@@ -85,6 +87,6 @@ type Mutation {
     updateAttribute(attributeId: ObjectId, input: AttributeInput): Attribute
     deleteAttribute(thingId: ObjectId, attributeId: ObjectId): ObjectId
     deleteInstance(thingId: ObjectId, instanceId: ObjectId): ObjectId
-
+    updateInstance(_id: ObjectId, input: InstanceInput): Instance
 
 }

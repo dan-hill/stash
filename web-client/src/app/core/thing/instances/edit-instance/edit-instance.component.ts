@@ -61,7 +61,14 @@ export class EditInstanceComponent implements OnInit {
       return {
         value: thing._id,
         label: thing.name,
-        isLeaf: true
+        isLeaf: false,
+        children: thing.instances.map(instance => {
+          return {
+            value: instance._id,
+            label: instance.name,
+            isLeaf: true,
+          }
+        })
       }
     });
   }

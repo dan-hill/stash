@@ -39,6 +39,7 @@ import {NzCascaderModule} from "ng-zorro-antd/cascader";
 import {NzInputNumberModule} from "ng-zorro-antd/input-number";
 import {NzModalModule} from "ng-zorro-antd/modal";
 import {EditInstanceComponent} from "./core/thing/instances/edit-instance/edit-instance.component";
+import {NzSwitchModule} from "ng-zorro-antd/switch";
 
 registerLocaleData(en);
 
@@ -81,6 +82,7 @@ registerLocaleData(en);
     NzCascaderModule,
     NzInputNumberModule,
     NzModalModule,
+    NzSwitchModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

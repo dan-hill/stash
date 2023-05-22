@@ -123,7 +123,12 @@ const resolvers = {
             await Instance.deleteOne({ _id: instance._id });
             return instanceId;
         },
-
+        updateInstance: async (_, { _id, input }) => {
+            let instance = await Instance.findById(new mongoose.Types.ObjectId(_id)).exec();
+            Object.assign(instance, input);
+            await instance.save();
+            return instance;
+        }
 
     },
     Thing: {
@@ -132,7 +137,7 @@ const resolvers = {
         instances: async (parent) => await Instance.find({ _id: { $in: parent.instances } }),
     },
     Instance: {
-        thing: async (parent) => await Thing.findById(parent.thing)
+        instance: async (parent) => await Instance.findById(parent.thing)
     }
 };
 

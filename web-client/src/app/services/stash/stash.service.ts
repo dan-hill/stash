@@ -38,11 +38,11 @@ export class StashService {
           instances {
             _id
             name
-            thing {
+            instance {
               _id
               name
             }
-            base_quantity
+            minimum_quantity
             quantity
           }
         }
@@ -82,12 +82,13 @@ export class StashService {
           instances {
             _id
             name
-            thing {
+            instance {
               _id
               name
             }
-            base_quantity
+            minimum_quantity
             quantity
+            transferable
           }
         }
       }
@@ -231,12 +232,13 @@ export class StashService {
         createInstance(owner: $owner, input: $input) {
           _id
           name
-          thing {
+          instance {
             _id
             name
           }
-          base_quantity
+          minimum_quantity
           quantity
+          transferable
         }
       }
     `;
@@ -270,6 +272,35 @@ export class StashService {
           throw new Error("deleteInstance is undefined");
         }
         return { deleteInstance: result.data.deleteInstance };
+      })
+    );
+  }
+  updateInstance(_id: string, input: any): Observable<{ updateInstance: Instance }> {
+    const mutation = gql`
+      mutation UpdateInstance($_id: ObjectId, $input: InstanceInput!) {
+        updateInstance(_id: $_id, input: $input) {
+          _id
+          name
+          instance {
+            _id
+            name
+          }
+          minimum_quantity
+          quantity
+          transferable
+        }
+      }
+    `;
+
+    return this.apollo.mutate<{ updateInstance: Instance }>({
+      mutation,
+      variables: { _id, input },
+    }).pipe(
+      map(result => {
+        if (!result.data?.updateInstance) {
+          throw new Error("updateInstance is undefined");
+        }
+        return { updateInstance: result.data.updateInstance };
       })
     );
   }
