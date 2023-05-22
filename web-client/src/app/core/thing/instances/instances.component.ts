@@ -138,7 +138,8 @@ export class InstancesComponent implements OnInit {
       if (thing === null) return;
       if (this.editingInstance === null) return;
       this.editingInstance.pipe(take(1)).subscribe(instance => {
-        this.stash.updateInstance(instance._id, this.validateForm.value).subscribe({
+        console.log(this.validateForm.value.instance[1])
+        this.stash.updateInstance(instance._id, {...this.validateForm.value, instance: this.validateForm.value.instance[1]}).subscribe({
           next: query => {
             console.log('created instance');
             this.thingChange.emit('changed');

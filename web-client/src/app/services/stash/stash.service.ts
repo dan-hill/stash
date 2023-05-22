@@ -134,32 +134,7 @@ export class StashService {
   }
 
 
-  updateThing(id: string, input: any): Observable<{updateThing: Thing}> {
-    const mutation = gql`
-      mutation UpdateThing($id: ID!, $input: ThingInput!) {
-        updateThing(id: $id, input: $input) {
-          _id
-          name
-          summary
-          category
-          subcategory
-          user
-        }
-      }
-    `;
 
-    return this.apollo.mutate<{ updateThing: Thing }>({
-      mutation,
-      variables: { id, input },
-    }).pipe(
-      map(result => {
-        if (!result.data?.updateThing) {
-          throw new Error("updateThing is undefined");
-        }
-        return { updateThing: result.data.updateThing };
-      })
-    );
-  }
 
   createAttribute(thingId: string, input: any): Observable<{ createAttribute: Attribute }> {
     const mutation = gql`
@@ -275,7 +250,7 @@ export class StashService {
       })
     );
   }
-  updateInstance(_id: string, input: any): Observable<{ updateInstance: Instance }> {
+  updateInstance(_id: string, input: any): Observable<Instance> {
     const mutation = gql`
       mutation UpdateInstance($_id: ObjectId, $input: InstanceInput!) {
         updateInstance(_id: $_id, input: $input) {
@@ -300,7 +275,7 @@ export class StashService {
         if (!result.data?.updateInstance) {
           throw new Error("updateInstance is undefined");
         }
-        return { updateInstance: result.data.updateInstance };
+        return  result.data.updateInstance;
       })
     );
   }

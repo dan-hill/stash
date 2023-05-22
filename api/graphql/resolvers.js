@@ -125,6 +125,7 @@ const resolvers = {
         },
         updateInstance: async (_, { _id, input }) => {
             let instance = await Instance.findById(new mongoose.Types.ObjectId(_id)).exec();
+            //input = {_id: new mongoose.Types.ObjectId(input._id), ...input}
             Object.assign(instance, input);
             await instance.save();
             return instance;
