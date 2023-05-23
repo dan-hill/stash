@@ -1,34 +1,26 @@
  <nz-layout>
-   <stash-header style="border-bottom-color: #073642; border-bottom-style: solid; border-bottom-width: 1px">
-     <button
-       nz-button
-       [nzType]="'primary'"
-       nzGhost [nzSize]="'small'"
-       nzShape="circle"
-       (click)="createModal(tplTitle, tplContent, createInstanceFooterTemplate, null)">
-       <span
-         nz-icon
-         nzType="plus"
-         zTheme="outline"
-         style="color: #2aa198">
-       </span>
-     </button>
-   </stash-header>
+   <app-instances-header >
+     <app-stash-button
+       size="small"
+       icon="plus"
+       content="add instance"
+       (onClick)="createModal(tplTitle, tplContent, createInstanceFooterTemplate, null)" />
+   </app-instances-header>
   <nz-table class="attribute-table" #instanceTable [nzData]="instances" [nzSize]="'small'">
     <thead>
     <tr>
       <th>Name</th>
-      <th nzWidth="150px">Container</th>
+      <th nzWidth="250px">Container</th>
       <th nzWidth="30px" >Quantity</th>
       <th nzWidth="30px" >Minimum</th>
-      <th nzWidth="30px"></th>
 
     </tr>
     </thead>
     <tbody>
     <tr *ngFor="let instance of instanceTable.data" class="editable-row">
       <td>
-        {{ instance.name }}
+        <a nz-button [nzSize]="'small'" nzType="link" (click)="createModal(tplTitle, tplContent, tplFooter, instance)">{{ instance.name }}</a>
+
       </td>
       <td>
         {{ instance.instance?.name }}
@@ -38,9 +30,6 @@
       </td>
       <td>
         {{ instance.minimum_quantity }}
-      </td>
-      <td nzAlign="right">
-        <button nz-button [nzType]="'primary'" nzGhost [nzSize]="'small'" nzShape="circle" (click)="createModal(tplTitle, tplContent, tplFooter, instance)">        <span nz-icon nzType="edit" nzTheme="outline"></span></button>
       </td>
     </tr>
     </tbody>
@@ -52,14 +41,14 @@
 
  <ng-template #tplContent let-params>
 
-   <form nz-form [formGroup]="validateForm">
+   <form nz-form [formGroup]="createOrUpdateInstanceForm">
      <nz-form-item>
        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="name">Instance Name</nz-form-label>
        <nz-form-control>
-         <input nz-input
-                formControlName="name"
-                type="text"
-                />
+         <input
+           nz-input
+           formControlName="name"
+           type="text" />
        </nz-form-control>
      </nz-form-item>
      <nz-form-item>
@@ -105,48 +94,30 @@
  </ng-template>
 
  <ng-template #tplFooter let-ref="modalRef">
-
-
-   <button nz-button style="float: left"
-           nzGhost
-           nzDanger
-           nzType="primary"
-           nzShape="circle"
-           nz-popconfirm
-           nzPopconfirmTitle="Sure to delete?"
-           (nzOnConfirm)="deleteInstance(ref)">
-
-     <span  nz-icon nzType="delete" nzTheme="outline"></span>
-   </button>
-   <button nz-button nzType="primary" (click)="destroyTplModal(ref)" [nzLoading]="tplModalButtonLoading">Cancel</button>
-   <button nz-button
-           nzGhost
-           nzType="primary"
-           (click)="updateInstance(ref)">
-     <span nz-icon nzType="save" nzTheme="outline"></span>
-     Save
-   </button>
+   <app-stash-button
+     style="float: left"
+     icon="delete"
+     nz-popconfirm
+     nzPopconfirmTitle="Sure to delete?"
+     (nzOnConfirm)="deleteInstance(ref)"
+     [loading] = "tplModalButtonLoading"/>
+   <app-stash-button
+     content="cancel"
+     (onClick)="destroyTplModal(ref)"/>
+   <app-stash-button
+     icon="save"
+     content="save"
+     [loading] = "tplModalButtonLoading"
+     (onClick)="updateInstance(ref)"/>
  </ng-template>
 
  <ng-template #createInstanceFooterTemplate let-ref="modalRef">
-
-
-   <button nz-button style="float: left"
-           nzGhost
-           nzDanger
-           nzType="primary"
-           nzShape="circle"
-           nz-popconfirm
-           nzPopconfirmTitle="Sure to delete?">
-
-     <span  nz-icon nzType="delete" nzTheme="outline"></span>
-   </button>
-   <button nz-button nzType="primary" (click)="destroyTplModal(ref)" [nzLoading]="tplModalButtonLoading">Cancel</button>
-   <button nz-button
-           nzGhost
-           nzType="primary"
-           (click)="createInstance(ref)">
-     <span nz-icon nzType="save" nzTheme="outline"></span>
-     Save
-   </button>
+   <app-stash-button
+     content="cancel"
+     (onClick)="destroyTplModal(ref)"/>
+   <app-stash-button
+     icon="save"
+     content="save"
+     [loading] = "tplModalButtonLoading"
+     (onClick)="createInstance(ref)"/>
  </ng-template>

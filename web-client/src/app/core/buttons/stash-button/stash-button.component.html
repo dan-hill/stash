@@ -1,0 +1,14 @@
+<button
+  nz-button
+  [nzType]="'link'"
+  nzGhost
+  [nzSize]="size ?? 'default'"
+  (click)="onClick.emit()"
+  [nzLoading]="loading">
+  <span *ngIf="icon"
+    nz-icon
+    [nzType]="icon"
+    nzTheme="outline">
+  </span>
+  <ng-container *ngIf="content">{{ content }}</ng-container>
+</button>

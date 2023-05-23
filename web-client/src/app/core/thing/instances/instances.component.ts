@@ -21,13 +21,12 @@ export class InstancesComponent implements OnInit {
 
   instances: Instance[] = [];
 
-  editId: string | null = null;
   visible: boolean = false;
-  demoValue: number = 0;
   editingInstance: Observable<Instance> = new Observable<Instance>();
   tplModalButtonLoading: boolean = false;
-  validateForm!: FormGroup;
+  createOrUpdateInstanceForm!: FormGroup;
   nzOptions: NzCascaderOption[] | null = null;
+
   constructor(
     private fb: FormBuilder,
     private stash: StashService,
@@ -36,7 +35,7 @@ export class InstancesComponent implements OnInit {
 
 
   ngOnInit() {
-    this.validateForm = this.fb.group({
+    this.createOrUpdateInstanceForm = this.fb.group({
       name: [null, [Validators.required]],
       instance: [null],
       minimum_quantity: [null],
@@ -99,7 +98,7 @@ export class InstancesComponent implements OnInit {
     }
 
     this.editingInstance = of(instance);
-    this.validateForm.setValue({
+    this.createOrUpdateInstanceForm.setValue({
       name: instance.name,
       instance: instance.instance?._id ?? null,
       minimum_quantity: instance.minimum_quantity,
@@ -138,8 +137,8 @@ export class InstancesComponent implements OnInit {
       if (thing === null) return;
       if (this.editingInstance === null) return;
       this.editingInstance.pipe(take(1)).subscribe(instance => {
-        console.log(this.validateForm.value.instance[1])
-        this.stash.updateInstance(instance._id, {...this.validateForm.value, instance: this.validateForm.value.instance[1]}).subscribe({
+        console.log(this.createOrUpdateInstanceForm.value.instance[1])
+        this.stash.updateInstance(instance._id, {...this.createOrUpdateInstanceForm.value, instance: this.createOrUpdateInstanceForm.value.instance[1]}).subscribe({
           next: query => {
             console.log('created instance');
             this.thingChange.emit('changed');
@@ -158,7 +157,7 @@ export class InstancesComponent implements OnInit {
       if (thing === null) return;
       if (this.editingInstance === null) return;
       this.editingInstance.pipe(take(1)).subscribe(instance => {
-        this.stash.createInstance(thing._id, this.validateForm.value).subscribe({
+        this.stash.createInstance(thing._id, this.createOrUpdateInstanceForm.value).subscribe({
           next: query => {
             this.thingChange.emit('changed');
             this.destroyTplModal(modelRef);
