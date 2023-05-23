@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const InstanceSchema = new mongoose.Schema({
     name: String,
     instance: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Instance'
     },
     minimum_quantity: Number,

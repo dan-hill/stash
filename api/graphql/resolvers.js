@@ -125,9 +125,13 @@ const resolvers = {
         },
         updateInstance: async (_, { _id, input }) => {
             let instance = await Instance.findById(new mongoose.Types.ObjectId(_id)).exec();
+
             //input = {_id: new mongoose.Types.ObjectId(input._id), ...input}
             Object.assign(instance, input);
+            //instance.instance = new mongoose.Types.ObjectId(input.instance);
+            console.log(instance)
             await instance.save();
+            console.log(instance)
             return instance;
         }
 
@@ -138,7 +142,7 @@ const resolvers = {
         instances: async (parent) => await Instance.find({ _id: { $in: parent.instances } }),
     },
     Instance: {
-        instance: async (parent) => await Instance.findById(parent.thing)
+        instance: async (parent) => await Instance.findById(parent.instance)
     }
 };
 
