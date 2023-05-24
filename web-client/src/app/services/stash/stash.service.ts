@@ -1,12 +1,11 @@
-import {Inject, Injectable} from '@angular/core';
-import { ApolloClient , gql } from '@apollo/client';
-import {Apollo, APOLLO_OPTIONS} from "apollo-angular";
+import { Injectable} from '@angular/core';
+import { gql } from '@apollo/client';
+import { Apollo } from "apollo-angular";
 import { map } from 'rxjs/operators';
-import {Observable} from 'rxjs';
-import {Thing} from "../../models/thing/thing.model";
-import {Attribute} from "../../models/attribute/attribute.model";
-import ObjectID from "bson-objectid";
-import {Instance} from "../../models/instance/instance.model";
+import { Observable } from 'rxjs';
+import { Thing } from "../../models/thing/thing.model";
+import { Attribute } from "../../models/attribute/attribute.model";
+import { Instance } from "../../models/instance/instance.model";
 
 @Injectable({
   providedIn: 'root',
