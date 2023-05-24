@@ -13,14 +13,12 @@
       <th nzWidth="250px">Container</th>
       <th nzWidth="30px" >Quantity</th>
       <th nzWidth="30px" >Minimum</th>
-
     </tr>
     </thead>
     <tbody>
     <tr *ngFor="let instance of instanceTable.data" class="editable-row">
       <td>
         <a nz-button [nzSize]="'small'" nzType="link" (click)="createModal(tplTitle, tplContent, tplFooter, instance)">{{ instance.name }}</a>
-
       </td>
       <td>
         {{ instance.instance?.name }}

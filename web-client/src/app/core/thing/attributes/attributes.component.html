@@ -1,74 +1,86 @@
 <nz-layout>
-  <stash-header >
-    <button
-      nz-button
-      nzType="default"
-      [nzSize]="'small'"
-      nzShape="circle"
-      nz-popover
-      (nzPopoverVisibleChange)="change($event)"
-      [(nzPopoverVisible)]="visible"
-      [nzPopoverContent]="contentTemplate"
-      nzPopoverTrigger="click">
-      <span nz-icon nzType="file-add" nzTheme="outline"></span>
-  </button>
-  </stash-header>
-  <nz-content class="tab-content">
-    <div class="tab-container">
-  <nz-table class="attribute-table" #editRowTable [nzData]="thing?.attributes ?? []" [nzSize]="'small'" [nzFrontPagination]="false">
+  <app-attributes-header >
+    <app-stash-button
+      size="small"
+      icon="plus"
+      content="add attribute"
+      (onClick)="createModal(tplTitle, tplContent, createInstanceFooterTemplate, null)" />
+  </app-attributes-header>
+  <nz-table class="attribute-table" #attributeTable [nzData]="attributes" [nzSize]="'small'">
     <thead>
-    <tr style="display: none">
-      <th nzLeft></th>
-
-      <th nzRight nzWidth="150px"></th>
-      <th nzRight nzWidth="30px" ></th>
+    <tr>
+      <th>Key</th>
+      <th nzWidth="250px">Value</th>
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let data of editRowTable.data" class="editable-row">
+    <tr *ngFor="let attribute of attributeTable.data" class="editable-row">
       <td>
-        <div class="editable-cell" [hidden]="editId === data._id" (click)="startEdit(data)">
-          {{ data.key }}
-        </div>
-        <input [hidden]="editId !== data._id" type="text" nz-input [(ngModel)]="key" (blur)="stopEdit(data)" />
+        <a nz-button [nzSize]="'small'" nzType="link" (click)="createModal(tplTitle, tplContent, tplFooter, attribute)">{{ attribute.key }}</a>
       </td>
       <td>
-        <div class="editable-cell" [hidden]="editId === data._id" (click)="startEdit(data)">
-          {{ data.value }}
-        </div>
-        <input [hidden]="editId !== data._id" type="text" nz-input [(ngModel)]="value" (blur)="stopEdit(data)" />
-      </td>
-      <td class="action-cell">
-        <button nz-button nzType="default"  nzDanger [nzSize]="'small'" nzShape="circle" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteAttribute(data._id)"><span nz-icon nzType="delete" nzTheme="outline"></span></button>
+        {{ attribute.value }}
       </td>
     </tr>
     </tbody>
   </nz-table>
-    </div>
-  </nz-content>
 </nz-layout>
 
 
-  <ng-template #contentTemplate>
-    <form nz-form [nzLayout]="'inline'" [formGroup]="validateForm" (ngSubmit)="saveAttribute()">
-      <nz-form-item>
-        <nz-form-control nzErrorTip="Please input your username!">
-          <nz-input-group nzPrefixIcon="user">
-            <input formControlName="key" nz-input placeholder="Key" />
-          </nz-input-group>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-control nzErrorTip="Please input your Password!">
-          <nz-input-group nzPrefixIcon="lock">
-            <input formControlName="value" nz-input placeholder="Value" />
-          </nz-input-group>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
+<ng-template #tplTitle>{{modalTitle}}</ng-template>
+
+<ng-template #tplContent let-params>
+
+  <form nz-form [formGroup]="createOrUpdateAttributeForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="key">Key</nz-form-label>
+      <nz-form-control>
+        <input
+          nz-input
+          formControlName="key"
+          type="text" />
+      </nz-form-control>
+    </nz-form-item>
+     <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="value">Value</nz-form-label>
         <nz-form-control>
-          <button nz-button nzType="primary" [disabled]="!validateForm.valid" >Save</button>
+          <input
+            nz-input
+            formControlName="value"
+            type="text" />
         </nz-form-control>
       </nz-form-item>
-    </form>
-  </ng-template>
+  </form>
+
+
+
+</ng-template>
+
+<ng-template #tplFooter let-ref="modalRef">
+  <app-stash-button
+    style="float: left"
+    icon="delete"
+    nz-popconfirm
+    nzPopconfirmTitle="Sure to delete?"
+    (nzOnConfirm)="deleteAttribute(ref)"
+    [loading] = "tplModalButtonLoading"/>
+  <app-stash-button
+    content="cancel"
+    (onClick)="destroyTplModal(ref)"/>
+  <app-stash-button
+    icon="save"
+    content="save"
+    [loading] = "tplModalButtonLoading"
+    (onClick)="updateAttribute(ref)"/>
+</ng-template>
+
+<ng-template #createInstanceFooterTemplate let-ref="modalRef">
+  <app-stash-button
+    content="cancel"
+    (onClick)="destroyTplModal(ref)"/>
+  <app-stash-button
+    icon="save"
+    content="save"
+    [loading] = "tplModalButtonLoading"
+    (onClick)="createAttribute(ref)"/>
+</ng-template>

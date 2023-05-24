@@ -3,7 +3,10 @@
   </stash-header>
 
   <nz-tabset nzType="card" [nzSize]="'small'" [nzTabBarStyle]="tabBarStyle">
-    <nz-tab [nzTitle]="'attributes'"></nz-tab>
+    <nz-tab [nzTitle]="'attributes'">
+      <app-attributes [thing]="thing" (thingChange)="onThingChange($event)"></app-attributes>
+
+    </nz-tab>
     <nz-tab [nzTitle]="'instances'">
       <app-instances [things]="things" (thingsChange)="onThingsChange($event)" [thing]="thing" (thingChange)="onThingChange($event)"></app-instances>
     </nz-tab>

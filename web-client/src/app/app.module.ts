@@ -42,6 +42,7 @@ import {EditInstanceComponent} from "./core/thing/instances/edit-instance/edit-i
 import {NzSwitchModule} from "ng-zorro-antd/switch";
 import {InstancesHeaderComponent} from "./core/thing/instances/instances-header/instances-header.component";
 import {StashButtonComponent} from "./core/buttons/stash-button/stash-button.component";
+import {AttributesHeaderComponent} from "./core/thing/attributes/attributes-header/attributes-header.component";
 
 registerLocaleData(en);
 
@@ -58,7 +59,8 @@ registerLocaleData(en);
     StashHeaderComponent,
     EditInstanceComponent,
     InstancesHeaderComponent,
-    StashButtonComponent
+    StashButtonComponent,
+    AttributesHeaderComponent
   ],
   imports: [
     BrowserModule,
