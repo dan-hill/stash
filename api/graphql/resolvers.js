@@ -68,6 +68,15 @@ const resolvers = {
             await thing.save();
             return thing;
         },
+        updateThing: async (_, { thingId, input }) => {
+            const thing = await Thing.findById(new mongoose.Types.ObjectId(thingId)).exec();
+            if (!thing) {
+                throw new Error('Thing not found');
+            }
+            Object.assign(thing, input);
+            await thing.save();
+            return thing;
+        },
         createInstance: async (_, { owner, input }) =>{
             const instance = await Instance.create(input)   ;
             const thing =  await Thing.findById(new mongoose.Types.ObjectId(owner)).exec();

@@ -1,6 +1,6 @@
 <nz-layout>
   <stash-header >
-    {{(thing | async)?.name ?? ''}}
+    <a nz-button [nzSize]="'large'" nzType="link" (click)="createModal(tplTitle, tplContent, tplFooter, thing)">{{(thing | async)?.name ?? ''}}</a>
   </stash-header>
 
   <nz-tabset nzType="card" [nzSize]="'small'" [nzTabBarStyle]="tabBarStyle">
@@ -18,3 +18,51 @@
 
 </nz-layout>
 
+<ng-template #tplTitle>{{modalTitle}}</ng-template>
+
+<ng-template #tplContent let-params>
+
+  <form nz-form [formGroup]="createOrUpdateThingForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="name">Name</nz-form-label>
+      <nz-form-control>
+        <input
+          nz-input
+          formControlName="name"
+          type="text" />
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+
+
+</ng-template>
+
+<ng-template #tplFooter let-ref="modalRef">
+  <app-stash-button
+    style="float: left"
+    icon="delete"
+    nz-popconfirm
+    nzPopconfirmTitle="Sure to delete?"
+    (nzOnConfirm)="deleteThing(ref)"
+    [loading] = "tplModalButtonLoading"/>
+  <app-stash-button
+    content="cancel"
+    (onClick)="destroyTplModal(ref)"/>
+  <app-stash-button
+    icon="save"
+    content="save"
+    [loading] = "tplModalButtonLoading"
+    (onClick)="updateThing(ref)"/>
+</ng-template>
+
+<ng-template #createInstanceFooterTemplate let-ref="modalRef">
+  <app-stash-button
+    content="cancel"
+    (onClick)="destroyTplModal(ref)"/>
+  <app-stash-button
+    icon="save"
+    content="save"
+    [loading] = "tplModalButtonLoading"
+    (onClick)="createThing(ref)"/>
+</ng-template>

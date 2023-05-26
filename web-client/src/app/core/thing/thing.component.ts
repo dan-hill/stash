@@ -4,9 +4,9 @@ import {StashService} from "../../services/stash/stash.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Thing} from "../../models/thing/thing.model";
 import {StashComponent} from "../stash/stash.component";
-import {EMPTY, Observable, of} from "rxjs";
+import {EMPTY, Observable, of, take} from "rxjs";
 import {Attribute} from "../../models/attribute/attribute.model";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
 @Component({
   selector: 'app-thing',
@@ -17,8 +17,8 @@ export class ThingComponent implements OnInit {
   public thing: Observable<Thing | null> = EMPTY;
   public things: Observable<Thing[]> = new Observable<Thing[]>();
 
-  private editingThing: Observable<Thing> = new Observable<Thing>();
-  createOrUpdateThingForm!: FormGroup;
+  public editingThing: Observable<Thing> = new Observable<Thing>();
+  public createOrUpdateThingForm!: FormGroup;
   public tplModalButtonLoading: boolean = false;
   public modalTitle: string = "Create Thing";
 
@@ -43,6 +43,9 @@ export class ThingComponent implements OnInit {
       this.thing = this.stash.getThing(id)
     });
     this.things = this.stash.getThings();
+    this.createOrUpdateThingForm = this.fb.group({
+      name: [null, [Validators.required]],
+    });
   }
 
   protected readonly StashComponent = StashComponent;
@@ -59,26 +62,27 @@ export class ThingComponent implements OnInit {
     });
   }
 
-  createModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>, thing: Thing | null): void {
+  createModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>, thingObservable: Observable<Thing | null>): void {
+    thingObservable.pipe(take(1)).subscribe(thing => {
+      if(thing === null) {
+        this.modalTitle = 'Create Thing';
+        thing = new Thing();
+      } else {
+        this.modalTitle = 'Edit Thing';
+      }
 
-    if(thing === null) {
-      this.modalTitle = 'Create Attribute';
-      thing = new Thing();
-    } else {
-      this.modalTitle = 'Edit Attribute';
-    }
-
-    this.editingThing = of(thing);
-    this.createOrUpdateThingForm.setValue({
-      name: thing.name
-    });
-    this.modal.create({
-      nzTitle: tplTitle,
-      nzContent: tplContent,
-      nzFooter: tplFooter,
-      nzMaskClosable: false,
-      nzClosable: true,
-      nzOnOk: () => console.log('Click ok')
+      this.editingThing = of(thing);
+      this.createOrUpdateThingForm.setValue({
+        name: thing.name
+      });
+      this.modal.create({
+        nzTitle: tplTitle,
+        nzContent: tplContent,
+        nzFooter: tplFooter,
+        nzMaskClosable: false,
+        nzClosable: true,
+        nzOnOk: () => console.log('Click ok')
+      });
     });
   }
   destroyTplModal(modelRef: NzModalRef): void {
@@ -90,4 +94,29 @@ export class ThingComponent implements OnInit {
     }, 1000);
   }
 
+  deleteThing(ref: any) {
+
+  }
+
+  updateThing( modelRef: NzModalRef) {
+    this.thing.pipe(take(1)).subscribe(thing => {
+      if (thing === null) return;
+      if (this.editingThing === null) return;
+      this.editingThing.pipe(take(1)).subscribe(thing => {
+        this.stash.updateThing(thing._id, this.createOrUpdateThingForm.value).pipe(take(1)).subscribe({
+          next: query => {
+            console.log('updated Thing');
+            this.destroyTplModal(modelRef);
+          },
+          error: error => {
+            console.error(error);
+          }
+        });
+      });
+    })
+  }
+
+  createThing(ref: any) {
+
+  }
 }

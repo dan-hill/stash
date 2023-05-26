@@ -133,7 +133,32 @@ export class StashService {
     );
   }
 
+  updateThing(thingId: string, input: any): Observable<{ updateThing: Thing }> {
+    const mutation = gql`
+      mutation UpdateThing($thingId: ObjectId, $input: ThingInput) {
+        updateThing(thingId: $thingId, input: $input) {
+          _id
+          name
+          summary
+          category
+          subcategory
+          user
+        }
+      }
+    `;
 
+    return this.apollo.mutate<{ updateThing: Thing }>({
+      mutation,
+      variables: { thingId, input },
+    }).pipe(
+      map(result => {
+        if (!result.data?.updateThing) {
+          throw new Error("updateThing is undefined");
+        }
+        return { updateThing: result.data.updateThing };
+      })
+    );
+  }
 
 
   createAttribute(thingId: string, input: any): Observable<{ createAttribute: Attribute }> {
