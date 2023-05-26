@@ -1,1 +1,99 @@
-<p>sources works!</p>
+<nz-layout>
+  <app-attributes-header >
+    <app-stash-button
+      size="small"
+      icon="plus"
+      content="add attribute"
+      (onClick)="createModal(tplTitle, tplContent, createInstanceFooterTemplate, null)" />
+  </app-attributes-header>
+  <nz-table class="attribute-table" #attributeTable [nzData]="sources" [nzSize]="'small'">
+    <thead>
+    <tr>
+      <th>Key</th>
+      <th nzWidth="250px">Value</th>
+      <th nzWidth="250px">URL</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let attribute of attributeTable.data" class="editable-row">
+      <td>
+        <a nz-button [nzSize]="'small'" nzType="link" (click)="createModal(tplTitle, tplContent, tplFooter, attribute)">{{ attribute.name }}</a>
+      </td>
+      <td>
+        {{ attribute.price.toLocaleString('en-us', {style: 'currency', currency: 'USD'}) }}
+      </td>
+      <td>
+        <a nz-button [nzSize]="'small'" nzType="link" [href]="attribute.url" target='_blank'><span nz-icon nzType="link" nzTheme="outline"></span>{{ attribute.url }}</a>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</nz-layout>
+
+
+<ng-template #tplTitle>{{modalTitle}}</ng-template>
+
+<ng-template #tplContent let-params>
+
+  <form nz-form [formGroup]="createOrUpdateSourceForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="name">Name</nz-form-label>
+      <nz-form-control>
+        <input
+          nz-input
+          formControlName="name"
+          type="text" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="price">Price</nz-form-label>
+      <nz-form-control>
+        <input
+          nz-input
+          formControlName="price"
+          type="text" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="url">URL</nz-form-label>
+      <nz-form-control>
+        <input
+          nz-input
+          formControlName="url"
+          type="text" />
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+
+
+</ng-template>
+
+<ng-template #tplFooter let-ref="modalRef">
+  <app-stash-button
+    style="float: left"
+    icon="delete"
+    nz-popconfirm
+    nzPopconfirmTitle="Sure to delete?"
+    (nzOnConfirm)="deleteSource(ref)"
+    [loading] = "tplModalButtonLoading"/>
+  <app-stash-button
+    content="cancel"
+    (onClick)="destroyTplModal(ref)"/>
+  <app-stash-button
+    icon="save"
+    content="save"
+    [loading] = "tplModalButtonLoading"
+    (onClick)="updateSource(ref)"/>
+</ng-template>
+
+<ng-template #createInstanceFooterTemplate let-ref="modalRef">
+  <app-stash-button
+    content="cancel"
+    (onClick)="destroyTplModal(ref)"/>
+  <app-stash-button
+    icon="save"
+    content="save"
+    [loading] = "tplModalButtonLoading"
+    (onClick)="createSource(ref)"/>
+</ng-template>

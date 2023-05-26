@@ -53,14 +53,14 @@ registerLocaleData(en);
     StashComponent,
     ThingComponent,
     AttributesComponent,
-    SourcesComponent,
     InstancesComponent,
     ThingListComponent,
     StashHeaderComponent,
     EditInstanceComponent,
     InstancesHeaderComponent,
     StashButtonComponent,
-    AttributesHeaderComponent
+    AttributesHeaderComponent,
+    SourcesComponent
   ],
   imports: [
     BrowserModule,

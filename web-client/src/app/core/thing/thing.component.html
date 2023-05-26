@@ -1,5 +1,6 @@
 <nz-layout>
-  <stash-header  [title]="(thing | async)?.name ?? ''">
+  <stash-header >
+    {{(thing | async)?.name ?? ''}}
   </stash-header>
 
   <nz-tabset nzType="card" [nzSize]="'small'" [nzTabBarStyle]="tabBarStyle">
@@ -10,7 +11,10 @@
     <nz-tab [nzTitle]="'instances'">
       <app-instances [things]="things" (thingsChange)="onThingsChange($event)" [thing]="thing" (thingChange)="onThingChange($event)"></app-instances>
     </nz-tab>
-    <nz-tab [nzTitle]="'sources'"></nz-tab>
+    <nz-tab [nzTitle]="'sources'">
+      <app-sources [thing]="thing" (thingChange)="onThingChange($event)"></app-sources>
+    </nz-tab>
   </nz-tabset>
 
 </nz-layout>
+

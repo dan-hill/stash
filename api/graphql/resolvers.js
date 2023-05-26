@@ -75,7 +75,40 @@ const resolvers = {
             await thing.save();
             return instance;
         },
-        createSource: async (_, { input }) => await Source.create(input),
+        createSource: async (_, { thingId, input }) => {
+            const source = await Source.create(input);
+            const thing =  await Thing.findById(new mongoose.Types.ObjectId(thingId)).exec();
+            console.log('thing.sources', thing.sources)
+            thing.sources.push(source._id);
+            await thing.save();
+            return source;
+        },
+        updateSource: async (_, { sourceId, input }) => {
+            const source = await Source.findById(new mongoose.Types.ObjectId(sourceId)).exec();
+            if (!source) {
+                throw new Error('Attribute not found');
+            }
+            Object.assign(source, input);
+            await source.save();
+            return source;
+        },
+
+        deleteSource: async (_, { sourceId, thingId }) => {
+            const source = await Source.findById(new mongoose.Types.ObjectId(sourceId)).exec();
+            if (!source) {
+                throw new Error('Attribute not found');
+            }
+            const thing = await Thing.findById(new mongoose.Types.ObjectId(thingId)).exec();
+            if (!thing) {
+                throw new Error('Thing not found');
+            }
+            thing.sources = thing.sources.filter(sourceId => !sourceId.equals(source._id));
+            await thing.save();
+            await Source.deleteOne({ _id: source._id });
+            return sourceId;
+        },
+
+
         createAttribute: async (_, { thingId, input }) => {
             console.log('createAttribute', input)
             const attribute = await Attribute.create(input);

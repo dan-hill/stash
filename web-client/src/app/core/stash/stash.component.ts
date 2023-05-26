@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, TemplateRef} from '@angular/core';
 import {StashService} from "../../services/stash/stash.service";
 import {Thing} from "../../models/thing/thing.model";
 import _ from "lodash";
@@ -6,9 +6,11 @@ import {NzFormatEmitEvent, NzTreeNode} from "ng-zorro-antd/tree";
 import {Router} from "@angular/router";
 import {User} from "../../models/user/user.model";
 import {UserService} from "../../services/user/user.service";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 import {map} from "rxjs/operators";
 import {KtdGridLayout, ktdTrackById} from "@katoid/angular-grid-layout";
+import {Attribute} from "../../models/attribute/attribute.model";
+import {NzModalRef} from "ng-zorro-antd/modal";
 
 @Component({
   selector: 'app-stash',
@@ -46,4 +48,5 @@ export class StashComponent implements OnInit {
     console.log($event);
     this.things = this.stash.getThings();
   }
+
 }

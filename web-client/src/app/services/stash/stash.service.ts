@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { Thing } from "../../models/thing/thing.model";
 import { Attribute } from "../../models/attribute/attribute.model";
 import { Instance } from "../../models/instance/instance.model";
+import {Source} from "../../models/source/source.model";
 
 @Injectable({
   providedIn: 'root',
@@ -275,6 +276,75 @@ export class StashService {
           throw new Error("updateInstance is undefined");
         }
         return  result.data.updateInstance;
+      })
+    );
+  }
+
+  createSource(thingId: string, input: any): Observable<{ createSource: Source }> {
+    const mutation = gql`
+      mutation CreateSource($thingId: ObjectId, $input: SourceInput!) {
+        createSource(thingId: $thingId, input: $input) {
+          _id
+          name
+          price
+          url
+        }
+      }
+    `;
+
+    return this.apollo.mutate<{ createSource: Source }>({
+      mutation,
+      variables: { thingId, input },
+    }).pipe(
+      map(result => {
+        if (!result.data?.createSource) {
+          throw new Error("createSource is undefined");
+        }
+        return { createSource: result.data.createSource };
+      })
+    );
+  }
+
+  deleteSource(sourceId: string, thingId: string): Observable<{ deleteSource: string }> {
+    const mutation = gql`
+      mutation DeleteSource($sourceId: ObjectId, $thingId: ObjectId) {
+        deleteSource(sourceId: $sourceId, thingId: $thingId)
+      }
+    `;
+
+    return this.apollo.mutate<{ deleteSource: string }>({
+      mutation,
+      variables: { sourceId, thingId },
+    }).pipe(
+      map(result => {
+        if (result.data?.deleteSource === undefined) {
+          throw new Error("deleteSource is undefined");
+        }
+        return { deleteSource: result.data.deleteSource };
+      })
+    );
+  }
+  updateSource(sourceId: string, input: any): Observable<Source> {
+    const mutation = gql`
+      mutation UpdateSource($sourceId: ObjectId, $input: SourceInput!) {
+        updateSource(sourceId: $sourceId, input: $input) {
+          _id
+          name
+          price
+          url
+        }
+      }
+    `;
+
+    return this.apollo.mutate<{ updateSource: Source }>({
+      mutation,
+      variables: { sourceId, input },
+    }).pipe(
+      map(result => {
+        if (!result.data?.updateSource) {
+          throw new Error("updateSource is undefined");
+        }
+        return  result.data.updateSource;
       })
     );
   }

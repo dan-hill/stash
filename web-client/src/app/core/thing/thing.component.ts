@@ -1,10 +1,13 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, TemplateRef} from '@angular/core';
 import {KtdGridLayout, ktdTrackById} from '@katoid/angular-grid-layout';
 import {StashService} from "../../services/stash/stash.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Thing} from "../../models/thing/thing.model";
 import {StashComponent} from "../stash/stash.component";
-import {EMPTY, Observable} from "rxjs";
+import {EMPTY, Observable, of} from "rxjs";
+import {Attribute} from "../../models/attribute/attribute.model";
+import {FormBuilder, FormGroup} from "@angular/forms";
+import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
 @Component({
   selector: 'app-thing',
   templateUrl: './thing.component.html',
@@ -13,20 +16,18 @@ import {EMPTY, Observable} from "rxjs";
 export class ThingComponent implements OnInit {
   public thing: Observable<Thing | null> = EMPTY;
   public things: Observable<Thing[]> = new Observable<Thing[]>();
-  cols: number = 6;
-  rowHeight: number = 100;
-  layout: KtdGridLayout = [
-    {id: 'attributes', x: 0, y: 0, w: 3, h: 3},
-    {id: 'instances', x: 3, y: 0, w: 3, h: 3},
-    {id: '2', x: 0, y: 3, w: 3, h: 3, minW: 2, minH: 3},
-    {id: '3', x: 3, y: 3, w: 3, h: 3, minW: 2, maxW: 3, minH: 2, maxH: 5},
-  ];
-  trackById = ktdTrackById
+
+  private editingThing: Observable<Thing> = new Observable<Thing>();
+  createOrUpdateThingForm!: FormGroup;
+  public tplModalButtonLoading: boolean = false;
+  public modalTitle: string = "Create Thing";
 
   constructor(
     private stash: StashService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private fb: FormBuilder,
+    private modal: NzModalService
 ) {
 
   }
@@ -43,9 +44,6 @@ export class ThingComponent implements OnInit {
     });
     this.things = this.stash.getThings();
   }
-  onLayoutUpdated(layout: KtdGridLayout) {
-    this.layout = layout;
-  }
 
   protected readonly StashComponent = StashComponent;
   tabs = [1, 2, 3];
@@ -60,4 +58,36 @@ export class ThingComponent implements OnInit {
       this.thing = this.stash.getThing(id)
     });
   }
+
+  createModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>, thing: Thing | null): void {
+
+    if(thing === null) {
+      this.modalTitle = 'Create Attribute';
+      thing = new Thing();
+    } else {
+      this.modalTitle = 'Edit Attribute';
+    }
+
+    this.editingThing = of(thing);
+    this.createOrUpdateThingForm.setValue({
+      name: thing.name
+    });
+    this.modal.create({
+      nzTitle: tplTitle,
+      nzContent: tplContent,
+      nzFooter: tplFooter,
+      nzMaskClosable: false,
+      nzClosable: true,
+      nzOnOk: () => console.log('Click ok')
+    });
+  }
+  destroyTplModal(modelRef: NzModalRef): void {
+    this.tplModalButtonLoading = true;
+    this.editingThing = new Observable<Thing>();
+    setTimeout(() => {
+      this.tplModalButtonLoading = false;
+      modelRef.destroy();
+    }, 1000);
+  }
+
 }
