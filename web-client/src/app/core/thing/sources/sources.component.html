@@ -15,7 +15,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let attribute of attributeTable.data" class="editable-row">
+    <tr *ngFor="let attribute of attributeTable.data" class="editable-row" (contextmenu)="contextMenu($event, menu)">
       <td>
         <a nz-button [nzSize]="'small'" nzType="link" (click)="createModal(tplTitle, tplContent, tplFooter, attribute)">{{ attribute.name }}</a>
       </td>
@@ -25,6 +25,13 @@
       <td>
         <a nz-button [nzSize]="'small'" nzType="link" [href]="attribute.url" target='_blank'><span nz-icon nzType="link" nzTheme="outline"></span>{{ attribute.url }}</a>
       </td>
+      <nz-dropdown-menu #menu="nzDropdownMenu">
+        <ul nz-menu>
+          <li nz-menu-item (click)="createModal(tplTitle, tplContent, tplFooter, attribute)">Edit</li>
+          <li nz-menu-item>Copy Url</li>
+          <li nz-menu-item>Delete</li>
+        </ul>
+      </nz-dropdown-menu>
     </tr>
     </tbody>
   </nz-table>

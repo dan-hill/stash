@@ -5,6 +5,7 @@ import {Thing} from "../../../models/thing/thing.model";
 import {StashService} from "../../../services/stash/stash.service";
 import {EMPTY, Observable, of, switchMap, take} from "rxjs";
 import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
+import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
 
 @Component({
   selector: 'app-sources',
@@ -25,7 +26,8 @@ export class SourcesComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private stash: StashService,
-    private modal: NzModalService) { }
+    private modal: NzModalService,
+    private nzContextMenuService: NzContextMenuService) { }
 
   ngOnInit() {
     this.createOrUpdateSourceForm = this.fb.group({
@@ -137,5 +139,13 @@ export class SourcesComponent implements OnInit {
       this.tplModalButtonLoading = false;
       modelRef.destroy();
     }, 1000);
+  }
+
+  contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent): void {
+    this.nzContextMenuService.create($event, menu);
+  }
+
+  closeMenu(): void {
+    this.nzContextMenuService.close();
   }
 }

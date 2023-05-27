@@ -43,6 +43,7 @@ import {NzSwitchModule} from "ng-zorro-antd/switch";
 import {InstancesHeaderComponent} from "./core/thing/instances/instances-header/instances-header.component";
 import {StashButtonComponent} from "./core/buttons/stash-button/stash-button.component";
 import {AttributesHeaderComponent} from "./core/thing/attributes/attributes-header/attributes-header.component";
+import {NzDropDownModule} from "ng-zorro-antd/dropdown";
 
 registerLocaleData(en);
 
@@ -62,34 +63,35 @@ registerLocaleData(en);
     AttributesHeaderComponent,
     SourcesComponent
   ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    AppRoutingModule,
-    IconsProviderModule,
-    NzLayoutModule,
-    NzMenuModule,
-    GraphQLModule,
-    NzCardModule,
-    NzFormModule,
-    NzInputModule,
-    NzCheckboxModule,
-    NzButtonModule,
-    ReactiveFormsModule,
-    NzBreadCrumbModule,
-    NzTreeModule,
-    KtdGridModule,
-    NzTableModule,
-    NzPopconfirmModule,
-    NzPopoverModule,
-    NzTabsModule,
-    NzCascaderModule,
-    NzInputNumberModule,
-    NzModalModule,
-    NzSwitchModule,
-  ],
+    imports: [
+        BrowserModule,
+        FormsModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+        AppRoutingModule,
+        IconsProviderModule,
+        NzLayoutModule,
+        NzMenuModule,
+        GraphQLModule,
+        NzCardModule,
+        NzFormModule,
+        NzInputModule,
+        NzCheckboxModule,
+        NzButtonModule,
+        ReactiveFormsModule,
+        NzBreadCrumbModule,
+        NzTreeModule,
+        KtdGridModule,
+        NzTableModule,
+        NzPopconfirmModule,
+        NzPopoverModule,
+        NzTabsModule,
+        NzCascaderModule,
+        NzInputNumberModule,
+        NzModalModule,
+        NzSwitchModule,
+        NzDropDownModule,
+    ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: NZ_I18N, useValue: en_US }
