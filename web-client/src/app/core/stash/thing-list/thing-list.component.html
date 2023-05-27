@@ -25,7 +25,7 @@
   <tbody>
   <ng-container *ngFor="let data of expandTable.data">
     <ng-container *ngFor="let item of mapOfExpandedData[data.key]">
-      <tr *ngIf="(item.parent && item.parent.expand) || !item.parent">
+      <tr *ngIf="(item.parent && item.parent.expand) || !item.parent" (contextmenu)="contextMenu($event, menu)">
         <td
           [nzIndentSize]="item.level! * 20"
           [nzShowExpand]="!!item.children"
@@ -35,6 +35,64 @@
         >
           <span nz-icon nzType="{{item.icon}}" nzTheme="outline" style="margin-right: 8px"></span>{{ item.name }}
         </td>
+        <nz-dropdown-menu #menu="nzDropdownMenu">
+          <ul nz-menu>
+            <li nz-menu-item (click)="createModal(tplTitle, tplContent, tplFooter, item)">Edit</li>
+            <li nz-menu-item>Copy Url</li>
+            <li nz-menu-item>Delete</li>
+          </ul>
+        </nz-dropdown-menu>
+
+        <ng-template #tplTitle>{{modalTitle}}</ng-template>
+
+        <ng-template #tplContent let-params>
+
+          <form nz-form [formGroup]="createOrUpdateThingForm">
+            <nz-form-item>
+              <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="name">Name</nz-form-label>
+              <nz-form-control>
+                <input
+                  nz-input
+                  formControlName="name"
+                  type="text" />
+              </nz-form-control>
+            </nz-form-item>
+          </form>
+
+
+
+        </ng-template>
+
+        <ng-template #tplFooter let-ref="modalRef">
+          <app-stash-button
+            style="float: left"
+            icon="delete"
+            nz-popconfirm
+            nzPopconfirmTitle="Sure to delete?"
+            (nzOnConfirm)="deleteThing(ref)"
+            [loading] = "tplModalButtonLoading"/>
+          <app-stash-button
+            content="cancel"
+            (onClick)="destroyTplModal(ref)"/>
+          <app-stash-button
+            icon="save"
+            content="save"
+            [loading] = "tplModalButtonLoading"
+            (onClick)="updateThing(item, ref)"/>
+        </ng-template>
+
+        <ng-template #createInstanceFooterTemplate let-ref="modalRef">
+          <app-stash-button
+            content="cancel"
+            (onClick)="destroyTplModal(ref)"/>
+          <app-stash-button
+            icon="save"
+            content="save"
+            [loading] = "tplModalButtonLoading"
+            (onClick)="createThing(ref)"/>
+        </ng-template>
+
+
       </tr>
     </ng-container>
   </ng-container>

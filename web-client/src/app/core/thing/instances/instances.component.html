@@ -16,9 +16,9 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let instance of instanceTable.data" class="editable-row">
+    <tr *ngFor="let instance of instanceTable.data" class="editable-row" (contextmenu)="contextMenu($event, menu)">
       <td>
-        <a nz-button [nzSize]="'small'" nzType="link" (click)="createModal(tplTitle, tplContent, tplFooter, instance)">{{ instance.name }}</a>
+        {{ instance.name }}
       </td>
       <td>
         {{ instance.instance?.name }}
@@ -29,6 +29,13 @@
       <td>
         {{ instance.minimum_quantity }}
       </td>
+      <nz-dropdown-menu #menu="nzDropdownMenu">
+        <ul nz-menu>
+          <li nz-menu-item (click)="createModal(tplTitle, tplContent, tplFooter, instance)">Edit</li>
+          <li nz-menu-item>Copy Url</li>
+          <li nz-menu-item (click)="deleteInstanceContext(instance)">Delete</li>
+        </ul>
+      </nz-dropdown-menu>
     </tr>
     </tbody>
   </nz-table>

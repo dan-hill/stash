@@ -6,6 +6,7 @@ import { StashService } from "../../../services/stash/stash.service";
 import { NzCascaderOption } from "ng-zorro-antd/cascader";
 import {EMPTY, Observable, of, switchMap, take} from "rxjs";
 import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
+import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
 
 @Component({
   selector: 'app-instances',
@@ -30,7 +31,8 @@ export class InstancesComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private stash: StashService,
-    private modal: NzModalService) { }
+    private modal: NzModalService,
+    private nzContextMenuService: NzContextMenuService) { }
 
 
 
@@ -188,5 +190,28 @@ export class InstancesComponent implements OnInit {
       })
 
     })
+  }
+
+  deleteInstanceContext(instance: Instance): void {
+    if (instance._id === undefined) return;
+    this.thing.pipe(take(1)).subscribe(thing => {
+      if (thing === null) return;
+      this.stash.deleteInstance(instance._id, thing._id ).subscribe({
+        next: query => {
+          this.thingChange.emit('changed');
+          this.visible = false;
+        },
+        error: error => {
+          console.error(error);
+        }
+      });
+    })
+  }
+  contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent): void {
+    this.nzContextMenuService.create($event, menu);
+  }
+
+  closeMenu(): void {
+    this.nzContextMenuService.close();
   }
 }

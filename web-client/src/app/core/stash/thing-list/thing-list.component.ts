@@ -1,12 +1,14 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, TemplateRef} from '@angular/core';
 import {Thing} from "../../../models/thing/thing.model";
 import {StashService} from "../../../services/stash/stash.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {UserService} from "../../../services/user/user.service";
 import {expand, map} from "rxjs/operators";
 import _ from "lodash";
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
-import {forkJoin, Observable, of, switchMap} from "rxjs";
+import {FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
+import {EMPTY, forkJoin, Observable, of, switchMap, take} from "rxjs";
+import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
 
 export interface TreeNodeInterface {
   key: string;
@@ -33,19 +35,31 @@ export class ThingListComponent implements OnInit{
   mapOfExpandedData: { [key: string]: TreeNodeInterface[] } = {};
   visible: boolean = false;
   validateForm!: UntypedFormGroup;
+
+  public editingThing: Observable<Thing> = new Observable<Thing>();
+  public createOrUpdateThingForm!: FormGroup;
+  public tplModalButtonLoading: boolean = false;
+  public modalTitle: string = "Create Thing";
+  public thing: Observable<Thing | null> = EMPTY;
   constructor(
     private stash: StashService,
     private router: Router,
     private userService: UserService,
     private fb: UntypedFormBuilder,
+    private modal: NzModalService,
+    private nzContextMenuService: NzContextMenuService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-   this.makeNodes()
-    this.validateForm = this.fb.group({
+    this.makeNodes();
+    this.createOrUpdateThingForm = this.fb.group({
       name: [null, [Validators.required]],
     });
-
+    this.route.params.subscribe(params => {
+      const id = params['id'];
+      this.thing = this.stash.getThing(id)
+    });
   }
 
   getCategories(things: Thing[]): TreeNodeInterface[] {
@@ -104,18 +118,25 @@ export class ThingListComponent implements OnInit{
     const array: TreeNodeInterface[] = [];
     const hashMap = {};
     stack.push({ ...root, level: 0, expand: false });
-
-    while (stack.length !== 0) {
-      const node = stack.pop()!;
-      this.visitNode(node, hashMap, array);
-      if (node.children) {
-        for (let i = node.children.length - 1; i >= 0; i--) {
-          stack.push({ ...node.children[i], level: node.level! + 1, expand: false, parent: node });
+    this.thing.pipe(take(1)).subscribe((thing: Thing | null) => {
+      while (stack.length !== 0) {
+        const node = stack.pop()!;
+        this.visitNode(node, hashMap, array);
+        if (node.children) {
+          console.log(node)
+          for (let i = node.children.length - 1; i >= 0; i--) {
+            if (thing !== null && node.children[i].key === thing._id) {
+              node.expand = true;
+            }
+            stack.push({ ...node.children[i], level: node.level! + 1, expand: false, parent: node });
+          }
         }
       }
-    }
+      return array;
+    });
 
     return array;
+
   }
 
   visitNode(node: TreeNodeInterface, hashMap: { [key: string]: boolean }, array: TreeNodeInterface[]): void {
@@ -152,4 +173,68 @@ export class ThingListComponent implements OnInit{
       }
     });
   }
+
+  contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent): void {
+    this.nzContextMenuService.create($event, menu);
+  }
+
+  closeMenu(): void {
+    this.nzContextMenuService.close();
+  }
+
+  createModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>, treeNode: TreeNodeInterface): void {
+    this.things.pipe(take(1)).subscribe((things: Thing[]) => {
+      const thing: Thing = things.find((thing: Thing) => thing._id === treeNode.key) ?? new Thing();
+      if(thing._id === null) {
+        this.modalTitle = 'Create Thing';
+      } else {
+        this.modalTitle = 'Edit Thing';
+      }
+
+      this.createOrUpdateThingForm.setValue({
+        name: thing.name
+      });
+      this.modal.create({
+        nzTitle: tplTitle,
+        nzContent: tplContent,
+        nzFooter: tplFooter,
+        nzMaskClosable: false,
+        nzClosable: true,
+        nzOnOk: () => console.log('Click ok')
+      });
+    } );
+  }
+  destroyTplModal(modelRef: NzModalRef): void {
+    this.tplModalButtonLoading = true;
+    this.editingThing = new Observable<Thing>();
+    setTimeout(() => {
+      this.tplModalButtonLoading = false;
+      modelRef.destroy();
+    }, 1000);
+  }
+  deleteThing(ref: any) {
+
+  }
+
+  updateThing(treeNode: TreeNodeInterface, modelRef: NzModalRef | void) {
+    this.things.pipe(take(1)).subscribe(things => {
+      const thing = things.find((thing: Thing) => thing._id === treeNode.key) ?? null;
+
+      if (thing === null) return;
+      this.stash.updateThing(thing._id, this.createOrUpdateThingForm.value).pipe(take(1)).subscribe({
+        next: query => {
+          console.log('updated Thing');
+          if(modelRef) this.destroyTplModal(modelRef);
+        },
+        error: error => {
+          console.error(error);
+        }
+      });
+    });
+  }
+
+  createThing(ref: any) {
+
+  }
+  protected readonly EMPTY = EMPTY;
 }
