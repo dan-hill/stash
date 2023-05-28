@@ -10,18 +10,8 @@ import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropd
 import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
 import {ThingsQuery} from "../../../state/things.query";
 import {ThingsState} from "../../../state/things.store";
+import {TreeNodeInterface} from "../../../models/tree-node/tree-node.interface";
 
-export interface TreeNodeInterface {
-  key: string;
-  name: string;
-  age?: number;
-  level?: number;
-  expand: boolean;
-  address?: string;
-  children?: TreeNodeInterface[];
-  parent?: TreeNodeInterface;
-  icon?: string;
-}
 
 @Component({
   selector: 'app-thing-list',
@@ -30,6 +20,7 @@ export interface TreeNodeInterface {
 })
 export class ThingListComponent implements OnInit{
   public things$ = this.thingsQuery.selectThings$;  // Add this line
+  public currentThing$ = this.thingsQuery.selectCurrentThing$;
 
   public nodes: any[] = [];
 
@@ -41,8 +32,7 @@ export class ThingListComponent implements OnInit{
   public createOrUpdateThingForm!: FormGroup;
   public tplModalButtonLoading: boolean = false;
   public modalTitle: string = "Create Thing";
-  public thing: Observable<Thing | null> = EMPTY;
-  public currentThing$ = this.thingsQuery.selectCurrentThing$;
+
   constructor(
     private stash: StashService,
     private router: Router,
@@ -59,9 +49,7 @@ export class ThingListComponent implements OnInit{
       name: [null, [Validators.required]],
     });
     this.things$.subscribe((things: Thing[]) => {
-
       this.makeNodes(things);
-
     });
     this.currentThing$.subscribe((thing: Thing | null) => {
       this.setExpandedCategory(thing?.category || 'Stash');
@@ -69,12 +57,8 @@ export class ThingListComponent implements OnInit{
   }
 
   ngOnChanges() {
-    console.log('ngOnChanges')
     this.things$.subscribe((things: Thing[]) => {
-        console.log(things)
-
-        this.makeNodes(things);
-
+      this.makeNodes(things);
     });
     this.currentThing$.subscribe((thing: Thing | null) => {
       this.setExpandedCategory(thing?.category || 'Stash');
@@ -84,15 +68,11 @@ export class ThingListComponent implements OnInit{
 
   setExpandedCategory(category: string): void {
     this.nodes = this.nodes.map((node: TreeNodeInterface) => {
-      if(node.key === category) {
-        node.expand = true;
-        return node;
-      } else {
-        node.expand = false;
-        return node;
-      }
+      node.expand = node.key === category;
+      return node;
     });
   }
+
   getCategories(things: Thing[]): TreeNodeInterface[] {
     return _(things)
       .map((thing: Thing) => thing.category)
@@ -164,11 +144,9 @@ export class ThingListComponent implements OnInit{
     }
   }
 
-  expandNode(node: TreeNodeInterface): void {
-  }
-  openThing(item: any) {
-    if (!item.children || item.children.length === 0) {
-      this.router.navigateByUrl(`/stash/${item.key}`);
+  async openThing(item: TreeNodeInterface) {
+    if (!item.children || item.children.length === 0 ) {
+      await this.router.navigateByUrl(`/stash/${item.key}`);
     }
   }
 
@@ -179,7 +157,6 @@ export class ThingListComponent implements OnInit{
     this.stash.createThing(this.validateForm.value).subscribe({
       next: (result) =>{
         this.validateForm.reset();
-
       },
       error: (error) => {
         console.error('Error:', error);
