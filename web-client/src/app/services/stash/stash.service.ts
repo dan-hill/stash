@@ -7,12 +7,13 @@ import { Thing } from "../../models/thing/thing.model";
 import { Attribute } from "../../models/attribute/attribute.model";
 import { Instance } from "../../models/instance/instance.model";
 import {Source} from "../../models/source/source.model";
+import {ThingsStore} from "../../state/things.store";
 
 @Injectable({
   providedIn: 'root',
 })
 export class StashService {
-  constructor(private apollo: Apollo) {}
+  constructor(private thingsStore: ThingsStore, private apollo: Apollo) {}
 
   getThing(_id: string): Observable<Thing> {
     const query = gql`
@@ -99,7 +100,7 @@ export class StashService {
       fetchPolicy: 'network-only',
     }).valueChanges.pipe(
       map(result => {
-        console.log(result);
+        this.thingsStore.updateThings(result.data.things);
         return result.data.things
       })
     );
@@ -155,10 +156,15 @@ export class StashService {
         if (!result.data?.updateThing) {
           throw new Error("updateThing is undefined");
         }
+
+        // Update the Thing in the store
+        this.thingsStore.upsert(thingId, result.data.updateThing);
+
         return { updateThing: result.data.updateThing };
       })
     );
   }
+
 
 
   createAttribute(thingId: string, input: any): Observable<{ createAttribute: Attribute }> {

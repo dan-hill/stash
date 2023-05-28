@@ -7,10 +7,7 @@ import {Router} from "@angular/router";
 import {User} from "../../models/user/user.model";
 import {UserService} from "../../services/user/user.service";
 import {Observable, of} from "rxjs";
-import {map} from "rxjs/operators";
-import {KtdGridLayout, ktdTrackById} from "@katoid/angular-grid-layout";
-import {Attribute} from "../../models/attribute/attribute.model";
-import {NzModalRef} from "ng-zorro-antd/modal";
+import {ThingsQuery} from "../../state/things.query";
 
 @Component({
   selector: 'app-stash',
@@ -18,35 +15,22 @@ import {NzModalRef} from "ng-zorro-antd/modal";
   styleUrls: ['./stash.component.css']
 })
 export class StashComponent implements OnInit {
-  public things: Observable<Thing[]> = new Observable<Thing[]>();
+  public things$!: Observable<Thing[]>;
   public user: Observable<User> = new Observable<User>();
-  cols: number = 100;
-  rowHeight: number = 10;
-  layout: KtdGridLayout = [
-    {id: 'thing-list', x: 0, y: 0, w: 15, h: 25},
-    {id: 'instances', x: 3, y: 0, w: 3, h: 3},
-    {id: '2', x: 0, y: 3, w: 3, h: 3, minW: 2, minH: 3},
-    {id: '3', x: 3, y: 3, w: 3, h: 3, minW: 2, maxW: 3, minH: 2, maxH: 5},
-  ];
-  trackById = ktdTrackById
+
   constructor(
-    private stash: StashService,
+    private stashService: StashService,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private thingsQuery: ThingsQuery
   ) { }
 
   ngOnInit() {
     this.user = this.userService.getMe();
-    this.things = this.stash.getThings();
+    this.stashService.getThings().subscribe();
+    this.things$ = this.thingsQuery.selectAll();
   }
-
-  onLayoutUpdated(layout: KtdGridLayout) {
-    this.layout = layout;
-  }
-
   onThingsChange($event: string) {
     console.log($event);
-    this.things = this.stash.getThings();
-  }
-
+    this.stashService.getThings().subscribe();  }
 }

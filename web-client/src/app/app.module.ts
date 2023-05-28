@@ -32,7 +32,7 @@ import {SourcesComponent} from "./core/thing/sources/sources.component";
 import {InstancesComponent} from "./core/thing/instances/instances.component";
 import {NzPopoverModule} from "ng-zorro-antd/popover";
 import {AuthInterceptor} from "./services/auth/auth.interceptor";
-import {ThingListComponent} from "./core/stash/thing-list/thing-list.component";
+import {ThingListComponent} from "./core/components/thing-list/thing-list.component";
 import {NzTabsModule} from "ng-zorro-antd/tabs";
 import {StashHeaderComponent} from "./core/components/stash-header/stash-header.component";
 import {NzCascaderModule} from "ng-zorro-antd/cascader";

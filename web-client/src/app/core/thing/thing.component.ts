@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, TemplateRef} from '@angular/core';
+import {Component, Input, OnInit, Output, TemplateRef} from '@angular/core';
 import {KtdGridLayout, ktdTrackById} from '@katoid/angular-grid-layout';
 import {StashService} from "../../services/stash/stash.service";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -8,6 +8,7 @@ import {EMPTY, Observable, of, take} from "rxjs";
 import {Attribute} from "../../models/attribute/attribute.model";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
+import {ThingsStore} from "../../state/things.store";
 @Component({
   selector: 'app-thing',
   templateUrl: './thing.component.html',
@@ -16,6 +17,8 @@ import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
 export class ThingComponent implements OnInit {
   public thing: Observable<Thing | null> = EMPTY;
   public things: Observable<Thing[]> = new Observable<Thing[]>();
+  @Input() selectedThingId: Observable<string> = of('');
+  @Output() selectedThingIdChange: Observable<string> = of('');
 
   public editingThing: Observable<Thing> = new Observable<Thing>();
   public createOrUpdateThingForm!: FormGroup;
@@ -27,7 +30,8 @@ export class ThingComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
-    private modal: NzModalService
+    private modal: NzModalService,
+    private thingsStore: ThingsStore,
 ) {
 
   }
@@ -41,12 +45,16 @@ export class ThingComponent implements OnInit {
     this.route.params.subscribe(params => {
       const id = params['id'];
       this.thing = this.stash.getThing(id)
+      this.thing.subscribe(thing => {
+        this.thingsStore.update({ currentThing: thing });
+      });
     });
     this.things = this.stash.getThings();
     this.createOrUpdateThingForm = this.fb.group({
       name: [null, [Validators.required]],
     });
   }
+
 
   protected readonly StashComponent = StashComponent;
   tabs = [1, 2, 3];
@@ -59,6 +67,9 @@ export class ThingComponent implements OnInit {
     this.route.params.subscribe(params => {
       const id = params['id'];
       this.thing = this.stash.getThing(id)
+      this.thing.subscribe(thing => {
+        this.thingsStore.update({ currentThing: thing });
+      });
     });
   }
 
@@ -106,6 +117,7 @@ export class ThingComponent implements OnInit {
         this.stash.updateThing(thing._id, this.createOrUpdateThingForm.value).pipe(take(1)).subscribe({
           next: query => {
             console.log('updated Thing');
+
             this.destroyTplModal(modelRef);
           },
           error: error => {
