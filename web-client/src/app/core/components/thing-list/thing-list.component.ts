@@ -5,11 +5,10 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {UserService} from "../../../services/user/user.service";
 import _ from "lodash";
 import {FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
-import {EMPTY,  Observable, take} from "rxjs";
+import {Observable, take} from "rxjs";
 import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
 import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
 import {ThingsQuery} from "../../../state/things.query";
-import {ThingsState} from "../../../state/things.store";
 import {TreeNodeInterface} from "../../../models/tree-node/tree-node.interface";
 
 
@@ -23,8 +22,8 @@ export class ThingListComponent implements OnInit{
   public currentThing$ = this.thingsQuery.selectCurrentThing$;
 
   public nodes: any[] = [];
+  public nodesMap: { [key: string]: TreeNodeInterface[] } = {};
 
-  mapOfExpandedData: { [key: string]: TreeNodeInterface[] } = {};
   visible: boolean = false;
   validateForm!: UntypedFormGroup;
 
@@ -97,7 +96,7 @@ export class ThingListComponent implements OnInit{
   makeNodes(things: Thing[]): void {
     const categories: TreeNodeInterface[] = this.getCategories(things);
     categories.forEach((category: TreeNodeInterface) => {
-      this.mapOfExpandedData[category.key] = this.convertTreeToList(category);
+      this.nodesMap[category.key] = this.convertTreeToList(category);
     } );
     this.nodes = categories;
   }
@@ -194,6 +193,26 @@ export class ThingListComponent implements OnInit{
       });
     } );
   }
+
+  createCreateThingModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>): void {
+    this.things$.pipe(take(1)).subscribe((things: Thing[]) => {
+      this.modalTitle = 'Create Thing';
+
+      this.createOrUpdateThingForm.setValue({
+        name: ''
+      });
+      this.modal.create({
+        nzTitle: tplTitle,
+        nzContent: tplContent,
+        nzFooter: tplFooter,
+        nzMaskClosable: false,
+        nzClosable: true,
+        nzOnOk: () => console.log('Click ok')
+      });
+    } );
+  }
+
+
   destroyTplModal(modelRef: NzModalRef): void {
     this.tplModalButtonLoading = true;
     this.editingThing = new Observable<Thing>();
@@ -202,10 +221,30 @@ export class ThingListComponent implements OnInit{
       modelRef.destroy();
     }, 1000);
   }
-  deleteThing(ref: any) {
 
+
+  deleteThing(_id: string) {
+    this.stash.deleteThing(_id).pipe(take(1)).subscribe({
+      next: query => {
+        console.log('deleted Thing');
+      },
+      error: error => {
+        console.error(error);
+      }
+    });
   }
 
+  deleteThingAndModal(_id: string, modelRef: NzModalRef) {
+    this.stash.deleteThing(_id).pipe(take(1)).subscribe({
+      next: query => {
+        console.log('deleted Thing');
+        this.destroyTplModal(modelRef);
+      },
+      error: error => {
+        console.error(error);
+      }
+    });
+  }
   updateThing(treeNode: TreeNodeInterface, modelRef: NzModalRef | void) {
     this.things$.pipe(take(1)).subscribe((things: Thing[]) => {
 
@@ -228,5 +267,4 @@ export class ThingListComponent implements OnInit{
   createThing(ref: any) {
 
   }
-  protected readonly EMPTY = EMPTY;
 }

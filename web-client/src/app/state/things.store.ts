@@ -2,36 +2,32 @@ import { Injectable } from '@angular/core';
 import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
 import { Thing } from '../models/thing/thing.model';
 
-export interface ThingsState extends EntityState<Thing> {
-  things: Thing[];
-  currentThing: Thing | null;
-
-}
-
-export function createInitialState(): ThingsState {
-  return {
-    things: [],
-    currentThing: null
-  };
-}
+export interface ThingsState extends EntityState<Thing> {}
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'things', idKey: '_id' })
-export class ThingsStore extends EntityStore<ThingsState> {
+export class ThingsStore extends EntityStore<ThingsState, Thing> {
   constructor() {
-    super(createInitialState());
+    super();
   }
 
   setCurrentThing(thing: Thing) {
-    this.update({ currentThing: thing });
+    this.setActive(thing._id);
   }
 
   clearCurrentThing() {
-    this.update({ currentThing: undefined });
+    this.setActive(null);
   }
 
+  addThings(things: Thing[]) {
+    this.add(things);
+  }
 
-  updateThings(things: Thing[]) {
-    this.update({ things: things });
+  updateThing(thing: Thing) {
+    this.update(thing._id, thing);
+  }
+
+  deleteThing(_id: string) {
+    this.remove(_id);
   }
 }

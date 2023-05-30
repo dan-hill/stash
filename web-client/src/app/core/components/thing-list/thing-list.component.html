@@ -1,18 +1,14 @@
 <nz-layout>
+  <stash-header>
+    things
+  </stash-header>
   <stash-header [title]="'things'">
-    <button
-      nz-button
-      nzType="default"
-      [nzSize]="'small'"
-      nzShape="circle"
-      nz-popover
-      (nzPopoverVisibleChange)="change($event)"
-      [(nzPopoverVisible)]="visible"
-      [nzPopoverContent]="contentTemplate"
-      nzPopoverPlacement="bottom"
-      nzPopoverTrigger="click">
-      <span nz-icon nzType="file-add" nzTheme="outline"></span>
-    </button>
+    <app-stash-button
+      icon="plus"
+      content="add thing"
+      [size]="'small'"
+      [loading] = "tplModalButtonLoading"
+      (onClick)="createCreateThingModal(createThingModalTitle, createThingModalContent, createThingModalFooter)"/>
   </stash-header>
   <div class="thing-list-container">
 <nz-table #expandTable [nzData]="nodes" nzTableLayout="fixed" [nzSize]="'small'" [nzShowPagination]="false">
@@ -24,13 +20,13 @@
   </thead>
   <tbody>
   <ng-container *ngFor="let data of expandTable.data">
-    <ng-container *ngFor="let item of mapOfExpandedData[data.key]">
+    <ng-container *ngFor="let item of nodesMap[data.key]">
       <tr *ngIf="(item.parent && item.parent.expand) || !item.parent" (contextmenu)="contextMenu($event, menu)">
         <td
           [nzIndentSize]="item.level! * 20"
           [nzShowExpand]="!!item.children"
           [(nzExpand)]="item.expand"
-          (nzExpandChange)="collapse(mapOfExpandedData[data.key], item, $event)"
+          (nzExpandChange)="collapse(nodesMap[data.key], item, $event)"
           (click)="openThing(item)"
         >
           <span nz-icon nzType="{{item.icon}}" nzTheme="outline" style="margin-right: 8px"></span>{{ item.name }}
@@ -39,7 +35,7 @@
           <ul nz-menu>
             <li nz-menu-item (click)="createModal(tplTitle, tplContent, tplFooter, item)">Edit</li>
             <li nz-menu-item>Copy Url</li>
-            <li nz-menu-item>Delete</li>
+            <li nz-menu-item (click)="deleteThing(item.key)">Delete</li>
           </ul>
         </nz-dropdown-menu>
 
@@ -69,7 +65,7 @@
             icon="delete"
             nz-popconfirm
             nzPopconfirmTitle="Sure to delete?"
-            (nzOnConfirm)="deleteThing(ref)"
+
             [loading] = "tplModalButtonLoading"/>
           <app-stash-button
             content="cancel"
@@ -119,4 +115,42 @@
     </form>
   </ng-template>
 
+
+<ng-template #createThingModalTitle>{{modalTitle}}</ng-template>
+
+<ng-template #createThingModalContent let-params>
+
+  <form nz-form [formGroup]="createOrUpdateThingForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="name">Name</nz-form-label>
+      <nz-form-control>
+        <input
+          nz-input
+          formControlName="name"
+          type="text" />
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+
+
+</ng-template>
+
+<ng-template #createThingModalFooter let-ref="modalRef">
+  <app-stash-button
+    style="float: left"
+    icon="delete"
+    nz-popconfirm
+    nzPopconfirmTitle="Sure to delete?"
+    (nzOnConfirm)="deleteThing(ref)"
+    [loading] = "tplModalButtonLoading"/>
+  <app-stash-button
+    content="cancel"
+    (onClick)="destroyTplModal(ref)"/>
+  <app-stash-button
+    icon="save"
+    content="save"
+    [loading] = "tplModalButtonLoading"
+    (onClick)="createThing(ref)"/>
+</ng-template>
 

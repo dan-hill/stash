@@ -100,7 +100,7 @@ export class StashService {
       fetchPolicy: 'network-only',
     }).valueChanges.pipe(
       map(result => {
-        this.thingsStore.updateThings(result.data.things);
+        this.thingsStore.addThings(result.data.things);
         return result.data.things
       })
     );
@@ -165,7 +165,26 @@ export class StashService {
     );
   }
 
+  deleteThing(_id: string): Observable<{ deleteThing: string }> {
+    const mutation = gql`
+      mutation DeleteThing($_id: ObjectId) {
+        deleteThing(_id: $_id)
+      }
+    `;
 
+    return this.apollo.mutate<{ deleteThing: string }>({
+      mutation,
+      variables: { _id },
+    }).pipe(
+      map(result => {
+        if (result.data?.deleteThing === undefined) {
+          throw new Error("deleteThing is undefined");
+        }
+          this.thingsStore.remove(result.data.deleteThing);
+          return { deleteThing: result.data.deleteThing };
+      })
+    );
+  }
 
   createAttribute(thingId: string, input: any): Observable<{ createAttribute: Attribute }> {
     const mutation = gql`
