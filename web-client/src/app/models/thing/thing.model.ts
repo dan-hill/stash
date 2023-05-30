@@ -2,13 +2,14 @@ import {Deserializable} from "../deserializable/deserializable.model";
 import {Instance} from "../instance/instance.model";
 import {Source} from "../source/source.model";
 import {Attribute} from "../attribute/attribute.model";
+import {Category} from "../category/category.model";
 
 export class Thing implements Deserializable{
   constructor(
     public _id: string = '',
     public name: string = '',
     public summary: string = '',
-    public category: string = '',
+    public category: Category | null = null,
     public subcategory: string = '',
     public user: string = '',
     public attributes: Attribute[] = [],
@@ -19,7 +20,7 @@ export class Thing implements Deserializable{
     _id: string;
     name: string;
     summary: string;
-    category: string;
+    category: Category | null;
     subcategory: string;
     user: string;
     attributes: Attribute[];

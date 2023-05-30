@@ -4,12 +4,18 @@ type Thing {
     _id: ObjectId!
     name: String
     summary: String
-    category: String
+    category: Category
     subcategory: String
     user: String
     attributes: [Attribute]
     sources: [Source]
     instances: [Instance]
+}
+
+type Category {
+    _id: ObjectId!
+    name: String
+    children: [Category]
 }
 
 type Instance {
@@ -36,7 +42,9 @@ type Attribute {
 
 type Query {
     thing(_id: ObjectId): Thing
-    things: [Thing]
+    things: [Thing],
+    category(_id: ObjectId): Category,
+    categories: [Category],
     instances: [Instance]
     sources: [Source]
     attributes: [Attribute]
@@ -53,6 +61,11 @@ input ThingInput {
     attributes: [ObjectId]
     sources: [ObjectId]
     instances: [ObjectId]
+}
+
+input CategoryInput {
+    name: String
+    children: [ObjectId]
 }
 
 input InstanceInput {
@@ -83,6 +96,9 @@ type Mutation {
     createThing(input: ThingInput): Thing
     updateThing(thingId: ObjectId, input: ThingInput): Thing
     deleteThing(_id: ObjectId): ObjectId
+    createCategory(input: CategoryInput): Category
+    updateCategory(categoryId: ObjectId, input: CategoryInput): Category
+    deleteCategory(_id: ObjectId): ObjectId
     createInstance(owner: ObjectId, input: InstanceInput): Instance
     createSource(thingId: ObjectId, input: SourceInput): Source
     updateSource(sourceId: ObjectId, input: SourceInput): Source

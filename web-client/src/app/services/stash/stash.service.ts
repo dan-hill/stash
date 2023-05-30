@@ -8,12 +8,14 @@ import { Attribute } from "../../models/attribute/attribute.model";
 import { Instance } from "../../models/instance/instance.model";
 import {Source} from "../../models/source/source.model";
 import {ThingsStore} from "../../state/things.store";
+import {Category} from "../../models/category/category.model";
+import {CategoriesStore} from "../../state/categories.store";
 
 @Injectable({
   providedIn: 'root',
 })
 export class StashService {
-  constructor(private thingsStore: ThingsStore, private apollo: Apollo) {}
+  constructor(private thingsStore: ThingsStore, private categoriesStore: CategoriesStore, private apollo: Apollo) {}
 
   getThing(_id: string): Observable<Thing> {
     const query = gql`
@@ -22,7 +24,10 @@ export class StashService {
           _id
           name
           summary
-          category
+          category {
+            _id,
+            name
+          }
           subcategory
           user
           attributes {
@@ -66,7 +71,10 @@ export class StashService {
           _id
           name
           summary
-          category
+          category {
+            _id,
+            name
+          }
           subcategory
           user
           attributes {
@@ -113,7 +121,10 @@ export class StashService {
           _id
           name
           summary
-          category
+          category {
+            _id,
+            name
+          }
           subcategory
           user
         }
@@ -141,7 +152,10 @@ export class StashService {
           _id
           name
           summary
-          category
+          category {
+            _id,
+            name
+          }
           subcategory
           user
         }
@@ -398,4 +412,120 @@ export class StashService {
       })
     );
   }
+  getCategories(): Observable<Category[]> {
+    const query = gql`
+      query GetCategories {
+        categories {
+          _id
+          name
+        }
+      }
+    `;
+
+    return this.apollo.watchQuery<{ categories: Category[] }>({
+      query,
+      fetchPolicy: 'network-only',
+    }).valueChanges.pipe(
+
+    map(result => {
+      this.categoriesStore.addCategories(result.data.categories);
+
+      return result.data.categories
+    })
+    );
+  }
+
+  getCategory(_id: string): Observable<Category> {
+    const query = gql`
+      query GetCategory($_id: ObjectId!) {
+        category(_id: $_id) {
+          _id
+          name
+        }
+      }
+    `;
+
+    return this.apollo.watchQuery<{ category: Category }>({
+      query,
+      variables: { _id },
+      fetchPolicy: 'network-only',
+    }).valueChanges.pipe(
+      map(result => result.data.category)
+    );
+  }
+
+  createCategory(input: any): Observable<{ createCategory: Category }> {
+    const mutation = gql`
+      mutation CreateCategory($input: CategoryInput!) {
+        createCategory(input: $input) {
+          _id
+          name
+          children {
+            _id
+            name
+          }
+        }
+      }
+    `;
+
+    return this.apollo.mutate<{ createCategory: Category }>({
+      mutation,
+      variables: { input },
+    }).pipe(
+      map(result => {
+        if (!result.data?.createCategory) {
+          throw new Error("createCategory is undefined");
+        }
+        return { createCategory: result.data.createCategory };
+      })
+    );
+  }
+
+  updateCategory(categoryId: string, input: any): Observable<{ updateCategory: Category }> {
+    const mutation = gql`
+      mutation UpdateCategory($categoryId: ObjectId, $input: CategoryInput) {
+        updateCategory(categoryId: $categoryId, input: $input) {
+          _id
+          name
+          children {
+            _id
+            name
+          }
+        }
+      }
+    `;
+
+    return this.apollo.mutate<{ updateCategory: Category }>({
+      mutation,
+      variables: { categoryId, input },
+    }).pipe(
+      map(result => {
+        if (!result.data?.updateCategory) {
+          throw new Error("updateCategory is undefined");
+        }
+        return { updateCategory: result.data.updateCategory };
+      })
+    );
+  }
+
+  deleteCategory(_id: string): Observable<{ deleteCategory: string }> {
+    const mutation = gql`
+      mutation DeleteCategory($_id: ObjectId) {
+        deleteCategory(_id: $_id)
+      }
+    `;
+
+    return this.apollo.mutate<{ deleteCategory: string }>({
+      mutation,
+      variables: { _id },
+    }).pipe(
+      map(result => {
+        if (result.data?.deleteCategory === undefined) {
+          throw new Error("deleteCategory is undefined");
+        }
+        return { deleteCategory: result.data.deleteCategory };
+      })
+    );
+  }
+
 }

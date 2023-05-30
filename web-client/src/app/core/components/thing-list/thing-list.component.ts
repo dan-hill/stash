@@ -51,7 +51,7 @@ export class ThingListComponent implements OnInit{
       this.makeNodes(things);
     });
     this.currentThing$.subscribe((thing: Thing | null) => {
-      this.setExpandedCategory(thing?.category || 'Stash');
+      //this.setExpandedCategory(thing?.category || 'Stash');
     });
   }
 
@@ -73,6 +73,7 @@ export class ThingListComponent implements OnInit{
   }
 
   getCategories(things: Thing[]): TreeNodeInterface[] {
+    if (!things) return [];
     return _(things)
       .map((thing: Thing) => thing.category)
       .push('Stash')
