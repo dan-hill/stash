@@ -8,4 +8,5 @@ export interface TreeNodeInterface {
   children?: TreeNodeInterface[];
   parent?: TreeNodeInterface;
   icon?: string;
+  isLeaf?: boolean;
 }
