@@ -109,6 +109,7 @@ export class StashService {
     }).valueChanges.pipe(
       map(result => {
         this.thingsStore.addThings(result.data.things);
+        console.log(result.data.things)
         return result.data.things
       })
     );
@@ -429,6 +430,7 @@ export class StashService {
 
     map(result => {
       this.categoriesStore.addCategories(result.data.categories);
+      console.log(result.data.categories)
 
       return result.data.categories
     })
