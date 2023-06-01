@@ -60,7 +60,10 @@ export class StashService {
       variables: { _id },
       fetchPolicy: 'network-only',
     }).valueChanges.pipe(
-      map(result =>  result.data.thing)
+      map(result =>  {
+       this.thingsStore.update(result.data.thing._id, result.data.thing);
+        return result.data.thing
+      })
       );
   }
 
@@ -127,6 +130,27 @@ export class StashService {
           }
           subcategory
           user
+          attributes {
+            _id
+            key
+            value
+          }
+          sources {
+            _id
+            name
+            url
+            price
+          }
+          instances {
+            _id
+            name
+            instance {
+              _id
+              name
+            }
+            minimum_quantity
+            quantity
+          }
         }
       }
     `;
@@ -140,6 +164,7 @@ export class StashService {
         if (!result.data?.createThing) {
           throw new Error("createThing is undefined");
         }
+        this.thingsStore.add(result.data.createThing);
         return { createThing: result.data.createThing };
       })
     );

@@ -17,6 +17,8 @@
       [nzData]="nodes"
       (nzClick)="activeNode($event)"
       (nzDblClick)="openFolder($event)"
+      (nzExpandChange)="onExpandChange($event)"
+      [nzExpandedKeys]="expandedNodes"
       [nzTreeTemplate]="nzTreeTemplate"
     ></nz-tree>
     <ng-template #nzTreeTemplate let-node let-origin="origin">
@@ -135,7 +137,7 @@
 
 
   <ng-template #contentTemplate>
-    <form nz-form [nzLayout]="'inline'" [formGroup]="validateForm" (ngSubmit)="saveThing()">
+    <form nz-form [nzLayout]="'inline'" [formGroup]="validateForm" >
       <nz-form-item>
         <nz-form-control nzErrorTip="Please input your username!">
           <nz-input-group>

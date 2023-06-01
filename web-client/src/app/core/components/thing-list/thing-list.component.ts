@@ -14,6 +14,8 @@ import {Category} from "../../../models/category/category.model";
 import {NzFormatEmitEvent, NzTreeNode} from "ng-zorro-antd/tree";
 import {CategoriesQuery} from "../../../state/categories/categories.query";
 import {ThingsStore} from "../../../state/things/things.store";
+import {UIStore} from "../../../state/ui/ui.store";
+import {UIQuery} from "../../../state/ui/ui.query";
 
 interface Node {
   key: string,
@@ -30,10 +32,13 @@ interface Node {
 })
 export class ThingListComponent implements OnInit{
   public things$ = this.thingsQuery.selectThings$;  // Add this line
+  public things: Thing[] = [];
  // public currentThing$: Observable<Thing | null> = this.thingsQuery.selectActive();
   public categories$ = this.categoriesQuery.selectCategories$;
+  public categories: Category[] = [];
   public nodes: any[] = [];
-
+  public expandedNodes$ = this.uiQuery.selectThingListExpandedNodes$
+  public expandedNodes: any[] = []
   validateForm!: UntypedFormGroup;
 
   public editingThing: Observable<Thing> = new Observable<Thing>();
@@ -50,31 +55,36 @@ export class ThingListComponent implements OnInit{
     private modal: NzModalService,
     private nzContextMenuService: NzContextMenuService,
     private route: ActivatedRoute,
-    private thingsQuery: ThingsQuery,  // Add this line
+    private thingsQuery: ThingsQuery,
     private categoriesQuery: CategoriesQuery,
-    private thingsStore: ThingsStore,  // Add this line
+    private thingsStore: ThingsStore,
+    private uiStore: UIStore,
+    private uiQuery: UIQuery
   ) { }
 
   ngOnInit(): void {
+    this.expandedNodes$.subscribe((expandedNodes) => {
+      this.expandedNodes = expandedNodes
+    })
+
     this.createOrUpdateThingForm = this.fb.group({
       name: [null, [Validators.required]],
     });
+
     this.things$.subscribe((things: Thing[]) => {
-      this.categories$.subscribe((categories: Category[]) => {
-        this.nodes = this.makeNodes(things, categories);
-      });
+      this.things = things;
+      this.nodes = this.makeNodes(this.things, this.categories);
+
     });
 
+    this.categories$.subscribe((categories: Category[]) => {
+      this.categories = categories;
+      this.nodes = this.makeNodes(this.things, this.categories);
+
+    });
   }
 
   ngOnChanges() {
-    this.things$.subscribe((things: Thing[]) => {
-      this.categories$.subscribe((categories: Category[]) => {
-        console.log('things', things);
-        console.log('categories', categories);
-        this.nodes = this.makeNodes(things, categories);
-      });
-    });
 
   }
 
@@ -90,7 +100,7 @@ export class ThingListComponent implements OnInit{
         title: category.name,
         children: [],
         icon: 'folder',
-        expanded: false,
+        expanded: this.expandedNodes.includes(category._id),
         isLeaf: false,
       } as Node
     })
@@ -109,22 +119,19 @@ export class ThingListComponent implements OnInit{
             } as Node
           }).value()
     })
-    console.log(categoryNodes)
     return categoryNodes;
   }
-
-
-
 
 
   async openThing(id: string) {
       await this.router.navigateByUrl(`/stash/${id}`);
   }
 
-  saveThing() {
-    this.stash.createThing(this.validateForm.value).subscribe({
+  createThing(ref: NzModalRef | undefined) {
+    this.stash.createThing({...this.createOrUpdateThingForm.value, category: this.categories.find((category) => category.name === 'Stash')?._id}).subscribe({
       next: (result) =>{
-        this.validateForm.reset();
+        this.createOrUpdateThingForm.reset();
+        if(ref) this.destroyTplModal(ref)
       },
       error: (error) => {
         console.error('Error:', error);
@@ -138,6 +145,9 @@ export class ThingListComponent implements OnInit{
 
   closeMenu(): void {
     this.nzContextMenuService.close();
+  }
+  onExpandChange($event: any){
+    this.uiStore.setThingListExpandedNodes($event.keys);
   }
 
   createModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>, treeNode: TreeNodeInterface): void {
@@ -233,10 +243,6 @@ export class ThingListComponent implements OnInit{
         });
 
     });
-  }
-
-  createThing(ref: any) {
-
   }
 
   openFolder(data: NzTreeNode | NzFormatEmitEvent): void {
