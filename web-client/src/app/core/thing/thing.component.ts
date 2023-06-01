@@ -8,7 +8,7 @@ import {EMPTY, Observable, of, take} from "rxjs";
 import {Attribute} from "../../models/attribute/attribute.model";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
-import {ThingsStore} from "../../state/things.store";
+import {ThingsStore} from "../../state/things/things.store";
 @Component({
   selector: 'app-thing',
   templateUrl: './thing.component.html',

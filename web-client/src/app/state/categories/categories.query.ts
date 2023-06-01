@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { QueryEntity } from '@datorama/akita';
 import {CategoriesState, CategoriesStore} from "./categories.store";
-import {Category} from "../models/category/category.model";
+import {Category} from "../../models/category/category.model";
 
 @Injectable({ providedIn: 'root' })
 export class CategoriesQuery extends QueryEntity<CategoriesState, Category> {

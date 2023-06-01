@@ -7,8 +7,8 @@ import {Router} from "@angular/router";
 import {User} from "../../models/user/user.model";
 import {UserService} from "../../services/user/user.service";
 import {Observable, of} from "rxjs";
-import {ThingsQuery} from "../../state/things.query";
-import {CategoriesQuery} from "../../state/categories.query";
+import {ThingsQuery} from "../../state/things/things.query";
+import {CategoriesQuery} from "../../state/categories/categories.query";
 import {Category} from "../../models/category/category.model";
 
 @Component({

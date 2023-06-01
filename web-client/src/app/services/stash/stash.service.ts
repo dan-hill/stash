@@ -7,9 +7,9 @@ import { Thing } from "../../models/thing/thing.model";
 import { Attribute } from "../../models/attribute/attribute.model";
 import { Instance } from "../../models/instance/instance.model";
 import {Source} from "../../models/source/source.model";
-import {ThingsStore} from "../../state/things.store";
+import {ThingsStore} from "../../state/things/things.store";
 import {Category} from "../../models/category/category.model";
-import {CategoriesStore} from "../../state/categories.store";
+import {CategoriesStore} from "../../state/categories/categories.store";
 
 @Injectable({
   providedIn: 'root',
@@ -108,8 +108,7 @@ export class StashService {
       fetchPolicy: 'network-only',
     }).valueChanges.pipe(
       map(result => {
-        this.thingsStore.addThings(result.data.things);
-        console.log(result.data.things)
+        this.thingsStore.add(result.data.things);
         return result.data.things
       })
     );
@@ -195,7 +194,7 @@ export class StashService {
         if (result.data?.deleteThing === undefined) {
           throw new Error("deleteThing is undefined");
         }
-          this.thingsStore.remove(result.data.deleteThing);
+          this.thingsStore.deleteThing(result.data.deleteThing);
           return { deleteThing: result.data.deleteThing };
       })
     );
@@ -429,7 +428,7 @@ export class StashService {
     }).valueChanges.pipe(
 
     map(result => {
-      this.categoriesStore.addCategories(result.data.categories);
+      this.categoriesStore.update({categories: result.data.categories});
       console.log(result.data.categories)
 
       return result.data.categories

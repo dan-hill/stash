@@ -8,11 +8,12 @@ import {FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators} from "@angu
 import {Observable, take} from "rxjs";
 import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
 import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
-import {ThingsQuery} from "../../../state/things.query";
+import {ThingsQuery} from "../../../state/things/things.query";
 import {TreeNodeInterface} from "../../../models/tree-node/tree-node.interface";
 import {Category} from "../../../models/category/category.model";
 import {NzFormatEmitEvent, NzTreeNode} from "ng-zorro-antd/tree";
-import {CategoriesQuery} from "../../../state/categories.query";
+import {CategoriesQuery} from "../../../state/categories/categories.query";
+import {ThingsStore} from "../../../state/things/things.store";
 
 interface Node {
   key: string,
@@ -29,7 +30,7 @@ interface Node {
 })
 export class ThingListComponent implements OnInit{
   public things$ = this.thingsQuery.selectThings$;  // Add this line
-  public currentThing$ = this.thingsQuery.selectCurrentThing$;
+ // public currentThing$: Observable<Thing | null> = this.thingsQuery.selectActive();
   public categories$ = this.categoriesQuery.selectCategories$;
   public nodes: any[] = [];
 
@@ -50,7 +51,8 @@ export class ThingListComponent implements OnInit{
     private nzContextMenuService: NzContextMenuService,
     private route: ActivatedRoute,
     private thingsQuery: ThingsQuery,  // Add this line
-    private categoriesQuery: CategoriesQuery
+    private categoriesQuery: CategoriesQuery,
+    private thingsStore: ThingsStore,  // Add this line
   ) { }
 
   ngOnInit(): void {
@@ -58,34 +60,24 @@ export class ThingListComponent implements OnInit{
       name: [null, [Validators.required]],
     });
     this.things$.subscribe((things: Thing[]) => {
-      console.log(things)
       this.categories$.subscribe((categories: Category[]) => {
         this.nodes = this.makeNodes(things, categories);
       });
     });
-    this.currentThing$.subscribe((thing: Thing | null) => {
-      //this.setExpandedCategory(thing?.category || 'Stash');
-    });
+
   }
 
   ngOnChanges() {
     this.things$.subscribe((things: Thing[]) => {
       this.categories$.subscribe((categories: Category[]) => {
+        console.log('things', things);
+        console.log('categories', categories);
         this.nodes = this.makeNodes(things, categories);
       });
     });
-    this.currentThing$.subscribe((thing: Thing | null) => {
-      //this.setExpandedCategory(thing?.category || 'Stash');
-    });
+
   }
 
-
-  setExpandedCategory(category: string): void {
-    this.nodes = this.nodes.map((node: TreeNodeInterface) => {
-      node.expand = node.key === category;
-      return node;
-    });
-  }
 
   makeNodes(things: Thing[], categories: Category[]): Node[]{
     if(!categories) console.log('no categories to map');
@@ -124,53 +116,9 @@ export class ThingListComponent implements OnInit{
 
 
 
-  collapse(array: TreeNodeInterface[], data: TreeNodeInterface, $event: boolean): void {
-    console.log('collapse');
-    if (!$event) {
-      if (data.children) {
-        data.children.forEach(d => {
-          const target = array.find(a => a.key === d.key)!;
-          target.expand = false;
-          this.collapse(array, target, false);
-        });
-      } else {
-        return;
-      }
-    }
-  }
 
-  convertTreeToList(root: TreeNodeInterface): TreeNodeInterface[] {
-    const stack: TreeNodeInterface[] = [];
-    const array: TreeNodeInterface[] = [];
-    const hashMap = {};
-    stack.push({ ...root, level: 0, expand: false });
-      while (stack.length !== 0) {
-        const node = stack.pop()!;
-        this.visitNode(node, hashMap, array);
-        if (node.children) {
-          for (let i = node.children.length - 1; i >= 0; i--) {
-            stack.push({ ...node.children[i], level: node.level! + 1, expand: false, parent: node });
-          }
-        }
-      }
-      return array;
-
-  }
-
-  visitNode(node: TreeNodeInterface, hashMap: { [key: string]: boolean }, array: TreeNodeInterface[]): void {
-    if (!hashMap[node.key]) {
-      hashMap[node.key] = true;
-      array.push(node);
-    }
-  }
-
-  async openThing(item: TreeNodeInterface) {
-    if (!item.children || item.children.length === 0 ) {
-      await this.router.navigateByUrl(`/stash/${item.key}`);
-    }
-  }
-
-  change(value: boolean): void {
+  async openThing(id: string) {
+      await this.router.navigateByUrl(`/stash/${id}`);
   }
 
   saveThing() {
@@ -247,6 +195,7 @@ export class ThingListComponent implements OnInit{
   deleteThing(_id: string) {
     this.stash.deleteThing(_id).pipe(take(1)).subscribe({
       next: query => {
+        this.thingsStore.remove(_id)
         console.log('deleted Thing');
       },
       error: error => {
@@ -258,6 +207,7 @@ export class ThingListComponent implements OnInit{
   deleteThingAndModal(_id: string, modelRef: NzModalRef) {
     this.stash.deleteThing(_id).pipe(take(1)).subscribe({
       next: query => {
+        this.thingsStore.remove(_id)
         console.log('deleted Thing');
         this.destroyTplModal(modelRef);
       },
