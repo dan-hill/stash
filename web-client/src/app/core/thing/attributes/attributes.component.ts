@@ -5,6 +5,7 @@ import {Thing} from "../../../models/thing/thing.model";
 import {StashService} from "../../../services/stash/stash.service";
 import {EMPTY, Observable, of, switchMap, take} from "rxjs";
 import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
+import {ThingsService} from "../../../services/things";
 
 @Component({
   selector: 'app-attributes',
@@ -13,9 +14,11 @@ import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
 })
 export class AttributesComponent implements OnInit {
   attributes: Attribute[] = [];
-  @Input() thing: Observable<Thing | null> = EMPTY;
+  @Input() thing$: Observable<Thing | undefined> = EMPTY;
   @Output() thingChange = new EventEmitter<string>();
+  thing: Thing | undefined = undefined;
   editId: string | null = null;
+
   visible: boolean = false;
   private editingAttribute: Observable<Attribute> = new Observable<Attribute>();
   createOrUpdateAttributeForm!: FormGroup;
@@ -24,7 +27,7 @@ export class AttributesComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private stash: StashService,
+    private thingService: ThingsService,
     private modal: NzModalService) { }
 
   ngOnInit() {
@@ -33,29 +36,30 @@ export class AttributesComponent implements OnInit {
       value: [null],
     });
 
-    this.thing.subscribe(thing => {
+    this.thing$.subscribe(thing => {
+      this.thing = thing;
       this.attributes = this.getAttributes(thing);
     });
   }
   ngOnChanges(changes: SimpleChanges) {
     console.log('changes', changes)
     if (changes['thing']) {
-      this.thing.subscribe(thing => {
+      this.thing$.subscribe(thing => {
         this.attributes = this.getAttributes(thing);
       });
     }
   }
 
-  getAttributes(thing: Thing | null): Attribute[] {
+  getAttributes(thing: Thing | undefined): Attribute[] {
     return thing?.attributes ?? [];
   }
 
   updateAttribute( modelRef: NzModalRef) {
-    this.thing.pipe(take(1)).subscribe(thing => {
-      if (thing === null) return;
+    this.thing$.pipe(take(1)).subscribe(thing => {
+      if (!thing) return;
       if (this.editingAttribute === null) return;
       this.editingAttribute.pipe(take(1)).subscribe(attribute => {
-        this.stash.updateAttribute(attribute._id, this.createOrUpdateAttributeForm.value).subscribe({
+        this.thingService.updateAttribute(thing._id, attribute._id, this.createOrUpdateAttributeForm.value).subscribe({
           next: query => {
             console.log('created attribute');
             this.thingChange.emit('changed');
@@ -72,9 +76,9 @@ export class AttributesComponent implements OnInit {
   deleteAttribute(modelRef: NzModalRef): void {
     this.editingAttribute.subscribe(attribute => {
       if (attribute._id === undefined) return;
-      this.thing.pipe(take(1)).subscribe(thing => {
-        if (thing === null) return;
-        this.stash.deleteAttribute(attribute._id, thing._id ).subscribe({
+      this.thing$.pipe(take(1)).subscribe(thing => {
+        if (!thing) return;
+        this.thingService.deleteAttribute(attribute._id, thing._id ).subscribe({
           next: query => {
             this.thingChange.emit('changed');
             this.destroyTplModal(modelRef);
@@ -89,9 +93,9 @@ export class AttributesComponent implements OnInit {
   }
 
 createAttribute(modelRef: NzModalRef): void {
-    this.thing.pipe(take(1)).subscribe(thing => {
-      if (thing === null) return;
-      this.stash.createAttribute(thing._id, this.createOrUpdateAttributeForm.value).subscribe({
+    this.thing$.pipe(take(1)).subscribe(thing => {
+      if (!thing) return;
+      this.thingService.createAttribute(thing._id, this.createOrUpdateAttributeForm.value).subscribe({
         next: query => {
           console.log('created attribute');
           this.thingChange.emit('changed');

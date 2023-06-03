@@ -11,23 +11,4 @@ export class ThingsStore extends EntityStore<ThingsState, Thing> {
     super();
   }
 
-  setCurrentThing(thing: Thing) {
-    this.setActive(thing._id);
-  }
-
-  clearCurrentThing() {
-    this.setActive(null);
-  }
-
-  addThings(things: Thing[]) {
-    this.add(things);
-  }
-
-  updateThing(thing: Thing) {
-    this.update(thing._id, thing);
-  }
-
-  deleteThing(_id: string) {
-    this.remove(_id);
-  }
 }

@@ -1,6 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output, TemplateRef} from '@angular/core';
 import {Thing} from "../../../models/thing/thing.model";
-import {StashService} from "../../../services/stash/stash.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {UserService} from "../../../services/user/user.service";
 import _ from "lodash";
@@ -8,14 +7,15 @@ import {FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators} from "@angu
 import {Observable, take} from "rxjs";
 import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
 import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
-import {ThingsQuery} from "../../../state/things/things.query";
+import {ThingsQuery} from "../../../services/things/things.query";
 import {TreeNodeInterface} from "../../../models/tree-node/tree-node.interface";
 import {Category} from "../../../models/category/category.model";
 import {NzFormatEmitEvent, NzTreeNode} from "ng-zorro-antd/tree";
-import {CategoriesQuery} from "../../../state/categories/categories.query";
-import {ThingsStore} from "../../../state/things/things.store";
+import {CategoryQuery} from "../../../services/category/category.query";
+import {ThingsStore} from "../../../services/things/things.store";
 import {UIStore} from "../../../state/ui/ui.store";
 import {UIQuery} from "../../../state/ui/ui.query";
+import {ThingsApi} from "../../../services/things/things.api";
 
 interface Node {
   key: string,
@@ -48,16 +48,16 @@ export class ThingListComponent implements OnInit{
   private activatedNode: NzTreeNode | undefined;
 
   constructor(
-    private stash: StashService,
+    private thingService: ThingsApi,
+    private thingsQuery: ThingsQuery,
+    private thingsStore: ThingsStore,
     private router: Router,
     private userService: UserService,
     private fb: UntypedFormBuilder,
     private modal: NzModalService,
     private nzContextMenuService: NzContextMenuService,
     private route: ActivatedRoute,
-    private thingsQuery: ThingsQuery,
-    private categoriesQuery: CategoriesQuery,
-    private thingsStore: ThingsStore,
+    private categoriesQuery: CategoryQuery,
     private uiStore: UIStore,
     private uiQuery: UIQuery
   ) { }
@@ -128,7 +128,7 @@ export class ThingListComponent implements OnInit{
   }
 
   createThing(ref: NzModalRef | undefined) {
-    this.stash.createThing({...this.createOrUpdateThingForm.value, category: this.categories.find((category) => category.name === 'Stash')?._id}).subscribe({
+    this.thingService.createThing({...this.createOrUpdateThingForm.value, category: this.categories.find((category) => category.name === 'Stash')?._id}).subscribe({
       next: (result) =>{
         this.createOrUpdateThingForm.reset();
         if(ref) this.destroyTplModal(ref)
@@ -203,7 +203,7 @@ export class ThingListComponent implements OnInit{
 
 
   deleteThing(_id: string) {
-    this.stash.deleteThing(_id).pipe(take(1)).subscribe({
+    this.thingService.deleteThing(_id).pipe(take(1)).subscribe({
       next: query => {
         this.thingsStore.remove(_id)
         console.log('deleted Thing');
@@ -215,7 +215,7 @@ export class ThingListComponent implements OnInit{
   }
 
   deleteThingAndModal(_id: string, modelRef: NzModalRef) {
-    this.stash.deleteThing(_id).pipe(take(1)).subscribe({
+    this.thingService.deleteThing(_id).pipe(take(1)).subscribe({
       next: query => {
         this.thingsStore.remove(_id)
         console.log('deleted Thing');
@@ -232,7 +232,7 @@ export class ThingListComponent implements OnInit{
         const thing = things.find((thing: Thing) => thing._id === treeNode.key) ?? null;
 
         if (thing === null) return;
-        this.stash.updateThing(thing._id, this.createOrUpdateThingForm.value).pipe(take(1)).subscribe({
+        this.thingService.updateThing(thing._id, this.createOrUpdateThingForm.value).pipe(take(1)).subscribe({
           next: query => {
             console.log('updated Thing');
             if(modelRef) this.destroyTplModal(modelRef);

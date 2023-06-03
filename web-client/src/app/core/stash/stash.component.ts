@@ -7,8 +7,8 @@ import {Router} from "@angular/router";
 import {User} from "../../models/user/user.model";
 import {UserService} from "../../services/user/user.service";
 import {Observable, of} from "rxjs";
-import {ThingsQuery} from "../../state/things/things.query";
-import {CategoriesQuery} from "../../state/categories/categories.query";
+import {ThingsQuery} from "../../services/things/things.query";
+import {CategoryQuery} from "../../services/category/category.query";
 import {Category} from "../../models/category/category.model";
 
 @Component({
@@ -26,7 +26,7 @@ export class StashComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private thingsQuery: ThingsQuery,
-    private categoriesQuery: CategoriesQuery
+    private categoriesQuery: CategoryQuery
   ) { }
 
   ngOnInit() {

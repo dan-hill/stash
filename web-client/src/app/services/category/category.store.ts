@@ -6,7 +6,7 @@ export interface CategoriesState extends EntityState<Category> {}
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'categories', idKey: '_id' })
-export class CategoriesStore extends EntityStore<CategoriesState, Category> {
+export class CategoryStore extends EntityStore<CategoriesState, Category> {
   constructor() {
     super();
   }

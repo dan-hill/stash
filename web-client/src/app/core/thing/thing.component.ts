@@ -8,14 +8,15 @@ import {EMPTY, Observable, of, take} from "rxjs";
 import {Attribute} from "../../models/attribute/attribute.model";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
-import {ThingsStore} from "../../state/things/things.store";
+import {ThingsStore} from "../../services/things/things.store";
+import {ThingsService} from "../../services/things";
 @Component({
   selector: 'app-thing',
   templateUrl: './thing.component.html',
   styleUrls: ['./thing.component.css']
 })
 export class ThingComponent implements OnInit {
-  public thing: Observable<Thing | null> = EMPTY;
+  public thing: Observable<Thing | undefined> = EMPTY;
   public things: Observable<Thing[]> = new Observable<Thing[]>();
   @Input() selectedThingId: Observable<string> = of('');
   @Output() selectedThingIdChange: Observable<string> = of('');
@@ -26,7 +27,7 @@ export class ThingComponent implements OnInit {
   public modalTitle: string = "Create Thing";
 
   constructor(
-    private stash: StashService,
+    private thingService: ThingsService,
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
@@ -44,12 +45,12 @@ export class ThingComponent implements OnInit {
     } );
     this.route.params.subscribe(params => {
       const id = params['id'];
-      this.thing = this.stash.getThing(id)
+      this.thing = this.thingService.getThing(id)
       this.thing.subscribe(thing => {
         this.thingsStore.update({ currentThing: thing });
       });
     });
-    this.things = this.stash.getThings();
+    this.things = this.thingService.getThings();
     this.createOrUpdateThingForm = this.fb.group({
       name: [null, [Validators.required]],
     });
@@ -60,13 +61,13 @@ export class ThingComponent implements OnInit {
   tabs = [1, 2, 3];
 
   onThingsChange($event: string) {
-    this.things = this.stash.getThings();
+    this.things = this.thingService.getThings();
   }
 
   onThingChange($event: string) {
     this.route.params.subscribe(params => {
       const id = params['id'];
-      this.thing = this.stash.getThing(id)
+      this.thing = this.thingService.getThing(id)
       this.thing.subscribe(thing => {
         this.thingsStore.update({ currentThing: thing });
       });
@@ -114,7 +115,7 @@ export class ThingComponent implements OnInit {
       if (thing === null) return;
       if (this.editingThing === null) return;
       this.editingThing.pipe(take(1)).subscribe(thing => {
-        this.stash.updateThing(thing._id, this.createOrUpdateThingForm.value).pipe(take(1)).subscribe({
+        this.thingService.updateThing(thing._id, this.createOrUpdateThingForm.value).pipe(take(1)).subscribe({
           next: query => {
             console.log('updated Thing');
 
