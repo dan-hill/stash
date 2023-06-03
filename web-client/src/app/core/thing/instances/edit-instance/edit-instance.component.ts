@@ -5,6 +5,7 @@ import {Instance} from "../../../../models/instance/instance.model";
 import {StashService} from "../../../../services/stash/stash.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NzCascaderOption} from "ng-zorro-antd/cascader";
+import {ThingsService} from "../../../../services/things";
 
 @Component({
   selector: 'app-edit-instance',
@@ -32,7 +33,7 @@ export class EditInstanceComponent implements OnInit {
 
 
   constructor(
-    private stash: StashService,
+    private stash: ThingsService,
     private fb: FormBuilder)
   {
     this.validateForm = this.fb.group({

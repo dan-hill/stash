@@ -74,9 +74,9 @@ export class ThingComponent implements OnInit {
     });
   }
 
-  createModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>, thingObservable: Observable<Thing | null>): void {
+  createModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>, thingObservable: Observable<Thing | undefined>): void {
     thingObservable.pipe(take(1)).subscribe(thing => {
-      if(thing === null) {
+      if(thing === undefined) {
         this.modalTitle = 'Create Thing';
         thing = new Thing();
       } else {

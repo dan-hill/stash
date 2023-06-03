@@ -5,7 +5,11 @@ import {tap} from "rxjs";
 import {SourcesApi} from "./sources.api";
 import {InstanceApi} from "./instance.api";
 import {AttributeApi} from "./attribute.api";
+import {Injectable} from "@angular/core";
 
+@Injectable({
+  providedIn: 'root',
+})
 export class ThingsService {
   constructor(
     public thingsApi: ThingsApi,

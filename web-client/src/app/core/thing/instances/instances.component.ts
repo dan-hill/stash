@@ -7,6 +7,7 @@ import { NzCascaderOption } from "ng-zorro-antd/cascader";
 import {EMPTY, Observable, of, switchMap, take} from "rxjs";
 import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
 import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {ThingsService} from "../../../services/things";
 
 @Component({
   selector: 'app-instances',
@@ -14,7 +15,7 @@ import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropd
   styleUrls: ['./instances.component.css']
 })
 export class InstancesComponent implements OnInit {
-  @Input() thing: Observable<Thing | null> = EMPTY;
+  @Input() thing: Observable<Thing | undefined> = EMPTY;
   @Output() thingChange = new EventEmitter<string>();
 
   @Input() things: Observable<Thing[]> = of([]);
@@ -30,7 +31,7 @@ export class InstancesComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private stash: StashService,
+    private stash: ThingsService,
     private modal: NzModalService,
     private nzContextMenuService: NzContextMenuService) { }
 
@@ -77,7 +78,8 @@ export class InstancesComponent implements OnInit {
       }
     });
   }
-  getInstances(thing: Thing | null): Instance[] {
+
+  getInstances(thing: Thing | undefined): Instance[] {
     return thing?.instances ?? [];
   }
 
@@ -139,8 +141,8 @@ export class InstancesComponent implements OnInit {
       if (thing === null) return;
       if (this.editingInstance === null) return;
       this.editingInstance.pipe(take(1)).subscribe(instance => {
-        console.log(this.createOrUpdateInstanceForm.value.instance[1])
-        this.stash.updateInstance(instance._id, {...this.createOrUpdateInstanceForm.value, instance: this.createOrUpdateInstanceForm.value.instance[1]}).subscribe({
+        if (thing?._id === undefined) return;
+        this.stash.updateInstance(thing._id, instance._id, {...this.createOrUpdateInstanceForm.value, instance: this.createOrUpdateInstanceForm.value.instance[1]}).subscribe({
           next: query => {
             console.log('created instance');
             this.thingChange.emit('changed');
@@ -159,6 +161,7 @@ export class InstancesComponent implements OnInit {
       if (thing === null) return;
       if (this.editingInstance === null) return;
       this.editingInstance.pipe(take(1)).subscribe(instance => {
+        if (thing?._id === undefined) return;
         this.stash.createInstance(thing._id, this.createOrUpdateInstanceForm.value).subscribe({
           next: query => {
             this.thingChange.emit('changed');
@@ -176,7 +179,7 @@ export class InstancesComponent implements OnInit {
     this.editingInstance.subscribe(instance => {
       if (instance._id === undefined) return;
       this.thing.pipe(take(1)).subscribe(thing => {
-        if (thing === null) return;
+        if (thing === undefined) return;
         this.stash.deleteInstance(instance._id, thing._id ).subscribe({
           next: query => {
             this.thingChange.emit('changed');
@@ -195,7 +198,7 @@ export class InstancesComponent implements OnInit {
   deleteInstanceContext(instance: Instance): void {
     if (instance._id === undefined) return;
     this.thing.pipe(take(1)).subscribe(thing => {
-      if (thing === null) return;
+      if (thing === undefined) return;
       this.stash.deleteInstance(instance._id, thing._id ).subscribe({
         next: query => {
           this.thingChange.emit('changed');

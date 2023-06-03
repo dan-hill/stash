@@ -10,6 +10,7 @@ import {Observable, of} from "rxjs";
 import {ThingsQuery} from "../../services/things/things.query";
 import {CategoryQuery} from "../../services/category/category.query";
 import {Category} from "../../models/category/category.model";
+import {ThingsService} from "../../services/things";
 
 @Component({
   selector: 'app-stash',
@@ -22,7 +23,7 @@ export class StashComponent implements OnInit {
   public user: Observable<User> = new Observable<User>();
 
   constructor(
-    private stashService: StashService,
+    private thingsService: ThingsService,
     private router: Router,
     private userService: UserService,
     private thingsQuery: ThingsQuery,
@@ -31,13 +32,8 @@ export class StashComponent implements OnInit {
 
   ngOnInit() {
     this.user = this.userService.getMe();
-    this.stashService.getThings().subscribe();
+    this.thingsService.fetchThings().subscribe();
     this.things$ = this.thingsQuery.selectAll();
-    this.stashService.getCategories().subscribe();
     this.categories$ = this.categoriesQuery.selectAll();
-  }
-  onThingsChange($event: string) {
-    console.log($event);
-    this.stashService.getThings().subscribe();
   }
 }

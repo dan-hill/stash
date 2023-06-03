@@ -44,6 +44,7 @@ import {InstancesHeaderComponent} from "./core/thing/instances/instances-header/
 import {StashButtonComponent} from "./core/buttons/stash-button/stash-button.component";
 import {AttributesHeaderComponent} from "./core/thing/attributes/attributes-header/attributes-header.component";
 import {NzDropDownModule} from "ng-zorro-antd/dropdown";
+import {ThingsService} from "./services/things";
 
 registerLocaleData(en);
 

@@ -6,6 +6,7 @@ import {StashService} from "../../../services/stash/stash.service";
 import {EMPTY, Observable, of, switchMap, take} from "rxjs";
 import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
 import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {ThingsService} from "../../../services/things";
 
 @Component({
   selector: 'app-sources',
@@ -14,7 +15,7 @@ import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropd
 })
 export class SourcesComponent implements OnInit {
   sources: Source[] = [];
-  @Input() thing: Observable<Thing | null> = EMPTY;
+  @Input() thing: Observable<Thing | undefined> = EMPTY;
   @Output() thingChange = new EventEmitter<string>();
   editId: string | null = null;
   visible: boolean = false;
@@ -25,7 +26,7 @@ export class SourcesComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private stash: StashService,
+    private stash: ThingsService,
     private modal: NzModalService,
     private nzContextMenuService: NzContextMenuService) { }
 
@@ -49,7 +50,7 @@ export class SourcesComponent implements OnInit {
     }
   }
 
-  getSources(thing: Thing | null): Source[] {
+  getSources(thing: Thing | undefined): Source[] {
     return thing?.sources ?? [];
   }
 
@@ -58,7 +59,8 @@ export class SourcesComponent implements OnInit {
       if (thing === null) return;
       if (this.editingSource === null) return;
       this.editingSource.pipe(take(1)).subscribe(source => {
-        this.stash.updateSource(source._id, this.createOrUpdateSourceForm.value).subscribe({
+        if(thing?._id === undefined) return;
+        this.stash.updateSource(thing._id, source._id, this.createOrUpdateSourceForm.value).subscribe({
           next: query => {
             console.log('created source');
             this.thingChange.emit('changed');
@@ -76,7 +78,7 @@ export class SourcesComponent implements OnInit {
     this.editingSource.subscribe(source => {
       if (source._id === undefined) return;
       this.thing.pipe(take(1)).subscribe(thing => {
-        if (thing === null) return;
+        if (thing === undefined) return;
         this.stash.deleteSource(source._id, thing._id ).subscribe({
           next: query => {
             this.thingChange.emit('changed');
@@ -93,7 +95,7 @@ export class SourcesComponent implements OnInit {
 
   createSource(modelRef: NzModalRef): void {
     this.thing.pipe(take(1)).subscribe(thing => {
-      if (thing === null) return;
+      if (thing === undefined) return;
       this.stash.createSource(thing._id, this.createOrUpdateSourceForm.value).subscribe({
         next: query => {
           console.log('created source');

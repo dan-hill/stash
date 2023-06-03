@@ -5,7 +5,7 @@
 
   <nz-tabset nzType="card" [nzSize]="'small'" [nzTabBarStyle]="tabBarStyle">
     <nz-tab [nzTitle]="'attributes'">
-      <app-attributes [thing]="thing" (thingChange)="onThingChange($event)"></app-attributes>
+      <app-attributes [thing$]="thing" (thingChange)="onThingChange($event)"></app-attributes>
 
     </nz-tab>
     <nz-tab [nzTitle]="'instances'">
