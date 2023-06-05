@@ -6,7 +6,6 @@ import { Observable } from 'rxjs';
 import { Thing } from "../../models/thing/thing.model";
 
 import {ThingsStore} from "./things.store";
-import {CategoryStore} from "../category/category.store";
 
 @Injectable({
   providedIn: 'root',
@@ -217,7 +216,7 @@ export class ThingsApi {
           throw new Error("deleteThing is undefined");
         }
         console.log('deleted thing: ', result.data.deleteThing);
-          return result.data.deleteThing;
+        return result.data.deleteThing;
       })
     );
   }

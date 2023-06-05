@@ -2,7 +2,11 @@ import {CategoryApi} from "./category.api";
 import {CategoryQuery} from "./category.query";
 import {CategoryStore} from "./category.store";
 import {tap} from "rxjs";
+import {Injectable} from "@angular/core";
 
+@Injectable({
+  providedIn: 'root',
+})
 export class CategoryService {
   constructor(
     public categoryApi: CategoryApi,

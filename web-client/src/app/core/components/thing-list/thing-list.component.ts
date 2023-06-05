@@ -16,6 +16,8 @@ import {ThingsStore} from "../../../services/things/things.store";
 import {UIStore} from "../../../state/ui/ui.store";
 import {UIQuery} from "../../../state/ui/ui.query";
 import {ThingsApi} from "../../../services/things/things.api";
+import {CategoryService} from "../../../services/category";
+import {ThingsService} from "../../../services/things";
 
 interface Node {
   key: string,
@@ -31,10 +33,10 @@ interface Node {
   styleUrls: ['./thing-list.component.css']
 })
 export class ThingListComponent implements OnInit{
-  public things$ = this.thingsQuery.selectThings$;  // Add this line
+  public things$ = this.thingService.getThings()  // Add this line
   public things: Thing[] = [];
  // public currentThing$: Observable<Thing | null> = this.thingsQuery.selectActive();
-  public categories$ = this.categoriesQuery.selectCategories$;
+  public categories$ = this.categoryService.getCategories();
   public categories: Category[] = [];
   public nodes: any[] = [];
   public expandedNodes$ = this.uiQuery.selectThingListExpandedNodes$
@@ -43,45 +45,46 @@ export class ThingListComponent implements OnInit{
 
   public editingThing: Observable<Thing> = new Observable<Thing>();
   public createOrUpdateThingForm!: FormGroup;
+  public createOrUpdateCategoryForm!: FormGroup;
+
   public tplModalButtonLoading: boolean = false;
   public modalTitle: string = "Create Thing";
   private activatedNode: NzTreeNode | undefined;
 
   constructor(
-    private thingService: ThingsApi,
-    private thingsQuery: ThingsQuery,
-    private thingsStore: ThingsStore,
+    private thingService: ThingsService,
+    private categoryService: CategoryService,
     private router: Router,
     private userService: UserService,
     private fb: UntypedFormBuilder,
     private modal: NzModalService,
     private nzContextMenuService: NzContextMenuService,
     private route: ActivatedRoute,
-    private categoriesQuery: CategoryQuery,
     private uiStore: UIStore,
     private uiQuery: UIQuery
   ) { }
 
   ngOnInit(): void {
-    this.expandedNodes$.subscribe((expandedNodes) => {
-      this.expandedNodes = expandedNodes
-    })
-
     this.createOrUpdateThingForm = this.fb.group({
+      name: [null, [Validators.required]],
+    });
+    this.createOrUpdateCategoryForm = this.fb.group({
       name: [null, [Validators.required]],
     });
 
     this.things$.subscribe((things: Thing[]) => {
       this.things = things;
       this.nodes = this.makeNodes(this.things, this.categories);
-
     });
 
     this.categories$.subscribe((categories: Category[]) => {
       this.categories = categories;
       this.nodes = this.makeNodes(this.things, this.categories);
-
     });
+
+    this.expandedNodes$.subscribe((expandedNodes) => {
+      this.expandedNodes = expandedNodes
+    })
   }
 
   ngOnChanges() {
@@ -151,8 +154,7 @@ export class ThingListComponent implements OnInit{
   }
 
   createModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>, treeNode: TreeNodeInterface): void {
-    this.things$.pipe(take(1)).subscribe((things: Thing[]) => {
-      const thing: Thing = things.find((thing: Thing) => thing._id === treeNode.key) ?? new Thing();
+      const thing: Thing = this.things.find((thing: Thing) => thing._id === treeNode.key) ?? new Thing();
       if(thing._id === null) {
         this.modalTitle = 'Create Thing';
       } else {
@@ -170,11 +172,9 @@ export class ThingListComponent implements OnInit{
         nzClosable: true,
         nzOnOk: () => console.log('Click ok')
       });
-    } );
   }
 
   createCreateThingModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>): void {
-    this.things$.pipe(take(1)).subscribe((things: Thing[]) => {
       this.modalTitle = 'Create Thing';
 
       this.createOrUpdateThingForm.setValue({
@@ -188,10 +188,24 @@ export class ThingListComponent implements OnInit{
         nzClosable: true,
         nzOnOk: () => console.log('Click ok')
       });
-    } );
   }
 
+  createEditCategoryModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>, node: Node): void {
+      const editingCategory = this.categories.find((category: Category) => category._id === node.key);
+      if (!editingCategory) return;
 
+      this.createOrUpdateCategoryForm.setValue({
+        name: editingCategory?.name
+      });
+      this.modal.create({
+        nzTitle: tplTitle,
+        nzContent: tplContent,
+        nzFooter: tplFooter,
+        nzMaskClosable: false,
+        nzClosable: true,
+        nzOnOk: () => console.log('Click ok')
+      });
+  }
   destroyTplModal(modelRef: NzModalRef): void {
     this.tplModalButtonLoading = true;
     this.editingThing = new Observable<Thing>();
@@ -205,8 +219,6 @@ export class ThingListComponent implements OnInit{
   deleteThing(_id: string) {
     this.thingService.deleteThing(_id).pipe(take(1)).subscribe({
       next: query => {
-        this.thingsStore.remove(_id)
-        console.log('deleted Thing');
       },
       error: error => {
         console.error(error);
@@ -217,8 +229,6 @@ export class ThingListComponent implements OnInit{
   deleteThingAndModal(_id: string, modelRef: NzModalRef) {
     this.thingService.deleteThing(_id).pipe(take(1)).subscribe({
       next: query => {
-        this.thingsStore.remove(_id)
-        console.log('deleted Thing');
         this.destroyTplModal(modelRef);
       },
       error: error => {
@@ -227,10 +237,8 @@ export class ThingListComponent implements OnInit{
     });
   }
   updateThing(treeNode: TreeNodeInterface, modelRef: NzModalRef | void) {
-    this.things$.pipe(take(1)).subscribe((things: Thing[]) => {
 
-        const thing = things.find((thing: Thing) => thing._id === treeNode.key) ?? null;
-
+        const thing = this.things.find((thing: Thing) => thing._id === treeNode.key) ?? null;
         if (thing === null) return;
         this.thingService.updateThing(thing._id, this.createOrUpdateThingForm.value).pipe(take(1)).subscribe({
           next: query => {
@@ -242,7 +250,6 @@ export class ThingListComponent implements OnInit{
           }
         });
 
-    });
   }
 
   openFolder(data: NzTreeNode | NzFormatEmitEvent): void {
@@ -264,5 +271,25 @@ export class ThingListComponent implements OnInit{
 
   selectDropdown(): void {
     // do something
+  }
+
+  updateCategory(treeNode: TreeNodeInterface, modelRef: NzModalRef | void) {
+
+      const category = this.categories.find((category: Category) => category._id === treeNode.key) ?? null;
+      if (category === null) return;
+      this.categoryService.updateCategory(category._id, this.createOrUpdateCategoryForm.value).pipe(take(1)).subscribe({
+        next: query => {
+          console.log('updated Category');
+          if(modelRef) this.destroyTplModal(modelRef);
+        },
+        error: error => {
+          console.error(error);
+        }
+      });
+
+  }
+
+  deleteCategory(ref: any) {
+
   }
 }

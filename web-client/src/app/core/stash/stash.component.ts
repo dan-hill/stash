@@ -11,6 +11,7 @@ import {ThingsQuery} from "../../services/things/things.query";
 import {CategoryQuery} from "../../services/category/category.query";
 import {Category} from "../../models/category/category.model";
 import {ThingsService} from "../../services/things";
+import {CategoryService} from "../../services/category";
 
 @Component({
   selector: 'app-stash',
@@ -27,13 +28,14 @@ export class StashComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private thingsQuery: ThingsQuery,
-    private categoriesQuery: CategoryQuery
+    private categoryService: CategoryService,
   ) { }
 
   ngOnInit() {
     this.user = this.userService.getMe();
     this.thingsService.fetchThings().subscribe();
     this.things$ = this.thingsQuery.selectAll();
-    this.categories$ = this.categoriesQuery.selectAll();
+    this.categoryService.fetchCategories().subscribe();
+    this.categories$ = this.categoryService.getCategories();
   }
 }
