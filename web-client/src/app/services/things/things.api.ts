@@ -58,6 +58,7 @@ export class ThingsApi {
       fetchPolicy: 'network-only',
     }).valueChanges.pipe(
       map(result =>  {
+        console.log('fetched thing: ', result.data.thing);
         return result.data.thing
       })
       );
@@ -107,6 +108,7 @@ export class ThingsApi {
       fetchPolicy: 'network-only',
     }).valueChanges.pipe(
       map(result => {
+        console.log('fetched things: ', result.data.things);
         return result.data.things
       })
     );
@@ -159,6 +161,7 @@ export class ThingsApi {
         if (!result.data?.createThing) {
           throw new Error("createThing is undefined");
         }
+        console.log('created thing: ', result.data.createThing);
         return result.data.createThing ;
       })
     );
@@ -189,7 +192,7 @@ export class ThingsApi {
         if (!result.data?.updateThing) {
           throw new Error("updateThing is undefined");
         }
-
+        console.log('updated thing: ', result.data.updateThing);
         // Update the Thing in the store
         this.thingsStore.upsert(thingId, result.data.updateThing);
 
@@ -213,6 +216,7 @@ export class ThingsApi {
         if (result.data?.deleteThing === undefined) {
           throw new Error("deleteThing is undefined");
         }
+        console.log('deleted thing: ', result.data.deleteThing);
           return result.data.deleteThing;
       })
     );
