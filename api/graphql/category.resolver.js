@@ -1,5 +1,6 @@
 import {Category} from "../model/category.js";
 import mongoose from "mongoose";
+import {Thing} from "../model/thing.js";
 
 export const findCategory = async (parent, args) => {
     return Category.findById(args._id);
@@ -14,10 +15,17 @@ export const createCategory = async (_, { input }) => {
 }
 
 export const deleteCategory = async (_, { _id }) => {
+    const stashCategory = await Category.findOne({name: 'Stash'}).exec();
+    const categoryChildren = await Thing.find({category: _id}).exec();
+
     const category = await Category.findById(new mongoose.Types.ObjectId(_id)).exec();
     if (!category) {
         throw new Error('Category not found');
     }
+    categoryChildren.forEach(async (child) => {
+        child.category = stashCategory._id;
+        await child.save();
+    });
     await Category.deleteOne({ _id: category._id });
     return _id;
 }

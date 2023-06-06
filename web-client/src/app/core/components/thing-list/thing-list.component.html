@@ -5,11 +5,16 @@
   <stash-header [title]="'things'">
     <app-stash-button
       icon="plus"
-      content="add thing"
+      content="thing"
       [size]="'small'"
       [loading] = "tplModalButtonLoading"
       (onClick)="createCreateThingModal(createThingModalTitle, createThingModalContent, createThingModalFooter)"/>
-
+    <app-stash-button
+      icon="plus"
+      content="category"
+      [size]="'small'"
+      [loading] = "tplModalButtonLoading"
+      (onClick)="createCreateCategoryModal(createCategoryModalTitle, createCategoryModalContent, createCategoryModalFooter)"/>
   </stash-header>
 
   <div class="thing-list-container">
@@ -37,7 +42,7 @@
       <nz-dropdown-menu #categoryContextMenu="nzDropdownMenu">
         <ul nz-menu>
           <li nz-menu-item (click)="createEditCategoryModal(editCategoryModalTitle, editCategoryModalContent, editCategoryModalFooter, node)">Edit</li>
-          <li nz-menu-item (click)="selectDropdown()">Delete</li>
+          <li nz-menu-item (click)="deleteCategory(node, undefined)">Delete</li>
         </ul>
       </nz-dropdown-menu>
       <nz-dropdown-menu #thingContextMenu="nzDropdownMenu">
@@ -72,7 +77,7 @@
           icon="delete"
           nz-popconfirm
           nzPopconfirmTitle="Sure to delete?"
-          (nzOnConfirm)="deleteCategory(ref)"
+          (nzOnConfirm)="deleteCategory(node, ref)"
           [loading] = "tplModalButtonLoading"/>
         <app-stash-button
           content="cancel"
@@ -147,3 +152,33 @@
 
 
 
+<ng-template #createCategoryModalTitle>Create Category</ng-template>
+
+<ng-template #createCategoryModalContent let-params>
+
+  <form nz-form [formGroup]="createOrUpdateCategoryForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="name">Name</nz-form-label>
+      <nz-form-control>
+        <input
+          nz-input
+          formControlName="name"
+          type="text" />
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+
+
+</ng-template>
+
+<ng-template #createCategoryModalFooter let-ref="modalRef">
+  <app-stash-button
+    content="cancel"
+    (onClick)="destroyTplModal(ref)"/>
+  <app-stash-button
+    icon="save"
+    content="save"
+    [loading] = "tplModalButtonLoading"
+    (onClick)="createCategory(ref)"/>
+</ng-template>

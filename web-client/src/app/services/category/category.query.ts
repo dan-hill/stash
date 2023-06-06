@@ -10,7 +10,7 @@ export class CategoryQuery extends QueryEntity<CategoriesState, Category> {
     super(store);
   }
 
-  selectCategories$ = this.select('categories');
+  selectCategories$ = this.selectAll();
   selectCurrentCategory$ = this.select('currentCategory');
   selectCategory(_id: string) { return this.selectEntity(_id)}
 

@@ -156,7 +156,6 @@ export class ThingsApi {
       variables: { input },
     }).pipe(
       map(result => {
-        console.log(result)
         if (!result.data?.createThing) {
           throw new Error("createThing is undefined");
         }

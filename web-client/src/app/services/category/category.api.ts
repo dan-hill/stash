@@ -77,6 +77,7 @@ export class CategoryApi {
         if (!result.data?.createCategory) {
           throw new Error("createCategory is undefined");
         }
+        console.log('created category:', result.data.createCategory)
         return result.data.createCategory;
       })
     );

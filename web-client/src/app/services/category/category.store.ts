@@ -11,23 +11,4 @@ export class CategoryStore extends EntityStore<CategoriesState, Category> {
     super();
   }
 
-  setCurrentCategory(category: Category) {
-    this.setActive(category._id);
-  }
-
-  clearCurrentCategory() {
-    this.setActive(null);
-  }
-
-  addCategories(categories: Category[]) {
-    this.add(categories);
-  }
-
-  updateCategory(category: Category) {
-    this.update(category._id, category);
-  }
-
-  deleteCategory(_id: string) {
-    this.remove(_id);
-  }
 }

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, TemplateRef} from '@angular/core';
+import {Component, OnInit, TemplateRef} from '@angular/core';
 import {Thing} from "../../../models/thing/thing.model";
 import {ActivatedRoute, Router} from "@angular/router";
 import {UserService} from "../../../services/user/user.service";
@@ -7,15 +7,11 @@ import {FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators} from "@angu
 import {Observable, take} from "rxjs";
 import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
 import {NzModalRef, NzModalService} from "ng-zorro-antd/modal";
-import {ThingsQuery} from "../../../services/things/things.query";
 import {TreeNodeInterface} from "../../../models/tree-node/tree-node.interface";
 import {Category} from "../../../models/category/category.model";
 import {NzFormatEmitEvent, NzTreeNode} from "ng-zorro-antd/tree";
-import {CategoryQuery} from "../../../services/category/category.query";
-import {ThingsStore} from "../../../services/things/things.store";
 import {UIStore} from "../../../state/ui/ui.store";
 import {UIQuery} from "../../../state/ui/ui.query";
-import {ThingsApi} from "../../../services/things/things.api";
 import {CategoryService} from "../../../services/category";
 import {ThingsService} from "../../../services/things";
 
@@ -73,11 +69,13 @@ export class ThingListComponent implements OnInit{
     });
 
     this.things$.subscribe((things: Thing[]) => {
+      console.log('things changed')
       this.things = things;
       this.nodes = this.makeNodes(this.things, this.categories);
     });
 
     this.categories$.subscribe((categories: Category[]) => {
+      console.log('categories changed')
       this.categories = categories;
       this.nodes = this.makeNodes(this.things, this.categories);
     });
@@ -191,21 +189,38 @@ export class ThingListComponent implements OnInit{
   }
 
   createEditCategoryModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>, node: Node): void {
-      const editingCategory = this.categories.find((category: Category) => category._id === node.key);
-      if (!editingCategory) return;
+    const editingCategory = this.categories.find((category: Category) => category._id === node.key);
+    if (!editingCategory) return;
 
-      this.createOrUpdateCategoryForm.setValue({
-        name: editingCategory?.name
-      });
-      this.modal.create({
-        nzTitle: tplTitle,
-        nzContent: tplContent,
-        nzFooter: tplFooter,
-        nzMaskClosable: false,
-        nzClosable: true,
-        nzOnOk: () => console.log('Click ok')
-      });
+    this.createOrUpdateCategoryForm.setValue({
+      name: editingCategory?.name
+    });
+    this.modal.create({
+      nzTitle: tplTitle,
+      nzContent: tplContent,
+      nzFooter: tplFooter,
+      nzMaskClosable: false,
+      nzClosable: true,
+      nzOnOk: () => console.log('Click ok')
+    });
   }
+
+  createCreateCategoryModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>): void {
+
+    this.createOrUpdateCategoryForm.setValue({
+      name: ''
+    });
+    this.modal.create({
+      nzTitle: tplTitle,
+      nzContent: tplContent,
+      nzFooter: tplFooter,
+      nzMaskClosable: false,
+      nzClosable: true,
+      nzOnOk: () => console.log('Click ok')
+    });
+  }
+
+
   destroyTplModal(modelRef: NzModalRef): void {
     this.tplModalButtonLoading = true;
     this.editingThing = new Observable<Thing>();
@@ -279,7 +294,6 @@ export class ThingListComponent implements OnInit{
       if (category === null) return;
       this.categoryService.updateCategory(category._id, this.createOrUpdateCategoryForm.value).pipe(take(1)).subscribe({
         next: query => {
-          console.log('updated Category');
           if(modelRef) this.destroyTplModal(modelRef);
         },
         error: error => {
@@ -289,7 +303,25 @@ export class ThingListComponent implements OnInit{
 
   }
 
-  deleteCategory(ref: any) {
+  deleteCategory(node: Node, ref: NzModalRef | undefined) {
+    this.categoryService.deleteCategory(node.key).pipe(take(1)).subscribe({
+      next: query => {
+        if(ref) this.destroyTplModal(ref);
+      },
+      error: error => {
+        console.log(error);
+      }
+    })
+  }
 
+  createCategory(ref: NzModalRef) {
+    this.categoryService.createCategory(this.createOrUpdateCategoryForm.value).pipe(take(1)).subscribe({
+      next: query => {
+        if(ref) this.destroyTplModal(ref);
+      },
+      error: error => {
+        console.error(error);
+      }
+    })
   }
 }
