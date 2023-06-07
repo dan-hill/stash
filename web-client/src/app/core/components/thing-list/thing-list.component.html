@@ -20,6 +20,8 @@
   <div class="thing-list-container">
 
     <nz-tree
+      nzDraggable
+      (nzOnDrop)="onDrop($event)"
       nzBlockNode
       [nzData]="nodes"
       (nzClick)="activeNode($event)"
@@ -29,7 +31,7 @@
       [nzTreeTemplate]="nzTreeTemplate"
     ></nz-tree>
     <ng-template #nzTreeTemplate let-node let-origin="origin">
-      <span class="custom-node">
+      <span class="custom-node" [attr.draggable]="!!node.isLeaf">
         <span *ngIf="!node.isLeaf" (contextmenu)="contextMenu($event, categoryContextMenu)">
           <span nz-icon [nzType]="node.isExpanded ? 'folder-open' : 'folder'" (click)="openFolder(node)"></span>
           <span class="folder-name" style="margin-left: 10px">{{ node.title }}</span>

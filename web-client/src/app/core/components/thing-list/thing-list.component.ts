@@ -91,9 +91,6 @@ export class ThingListComponent implements OnInit{
 
 
   makeNodes(things: Thing[], categories: Category[]): Node[]{
-    if(!categories) console.log('no categories to map');
-    if(!things) console.log('no things to map');
-    if(!categories) return [];
 
     const categoryNodes = categories.map(category => {
       return {
@@ -105,6 +102,8 @@ export class ThingListComponent implements OnInit{
         isLeaf: false,
       } as Node
     })
+
+
 
     categoryNodes.forEach(categoryNode => {
       categoryNode.children = _(things)
@@ -323,5 +322,26 @@ export class ThingListComponent implements OnInit{
         console.error(error);
       }
     })
+  }
+
+  onDrop($event: NzFormatEmitEvent) {
+    console.log($event.node);
+    console.log($event.dragNode);
+    const thing = this.things.find((thing: Thing) => thing._id === $event.dragNode?.key);
+    if (!$event.node?.isLeaf) {
+      this.nodes = this.makeNodes(this.things, this.categories);
+      return;
+    }
+    console.log(thing)
+    if(thing) {
+      this.thingService.updateThing(thing._id, {category: $event.node?.key}).pipe(take(1)).subscribe({
+        next: query => {
+          console.log('updated Thing');
+        },
+        error: error => {
+          console.error(error);
+        }
+      });
+    }
   }
 }
