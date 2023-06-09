@@ -6,6 +6,10 @@ const CategorySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category'
     }],
+    parent: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category'
+    }
 })
 
 export const Category = mongoose.model('Category', CategorySchema);

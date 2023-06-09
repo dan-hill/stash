@@ -58,6 +58,7 @@ const resolvers = {
     },
     Category: {
         children: async (parent) => await Category.find({ _id: { $in: parent.children } }),
+        parent: async (parent) => await Category.findById(parent.parent),
     }
 };
 

@@ -16,6 +16,7 @@ type Category {
     _id: ObjectId!
     name: String
     children: [Category]
+    parent: Category
 }
 
 type Instance {
@@ -66,6 +67,7 @@ input ThingInput {
 input CategoryInput {
     name: String
     children: [ObjectId]
+    parent: ObjectId
 }
 
 input InstanceInput {

@@ -18,6 +18,9 @@ export class CategoryApi {
         categories {
           _id
           name
+          parent {
+            _id
+          }
         }
       }
     `;
@@ -42,6 +45,9 @@ export class CategoryApi {
         category(_id: $_id) {
           _id
           name
+          parent {
+            _id
+          }
         }
       }
     `;
@@ -64,6 +70,9 @@ export class CategoryApi {
           children {
             _id
             name
+          }
+          parent {
+            _id
           }
         }
       }
@@ -92,6 +101,9 @@ export class CategoryApi {
           children {
             _id
             name
+          }
+          parent {
+            _id
           }
         }
       }

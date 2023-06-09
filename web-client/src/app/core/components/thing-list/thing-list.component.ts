@@ -92,7 +92,7 @@ export class ThingListComponent implements OnInit{
 
   makeNodes(things: Thing[], categories: Category[]): Node[]{
 
-    const categoryNodes = categories.map(category => {
+    const nodes = categories.map(category => {
       return {
         key: category._id,
         title: category.name,
@@ -103,24 +103,37 @@ export class ThingListComponent implements OnInit{
       } as Node
     })
 
+    things.forEach(thing => {
+      if(!thing.category) {
+        nodes.push({
+          key: thing._id,
+          title: thing.name,
+          children: [],
+          icon: 'folder',
+          expanded: false,
+          isLeaf: true
+        } as Node)
+      }
+    });
 
-
-    categoryNodes.forEach(categoryNode => {
+    nodes.forEach(categoryNode => {
       categoryNode.children = _(things)
-          .filter(thing => thing.category?._id === categoryNode.key)
-          .map((thing: Thing) => {
-            return {
-              key: thing._id,
-              title: thing.name,
-              children: [],
-              icon: 'folder',
-              expanded: false,
-              isLeaf: true
-            } as Node
-          }).value()
+        .filter(thing => thing.category?._id === categoryNode.key)
+        .map((thing: Thing) => {
+          return {
+            key: thing._id,
+            title: thing.name,
+            children: [],
+            icon: 'folder',
+            expanded: false,
+            isLeaf: true
+          } as Node
+        }).value()
     })
-    return categoryNodes;
+    return nodes;
   }
+
+
 
 
   async openThing(id: string) {
@@ -328,13 +341,19 @@ export class ThingListComponent implements OnInit{
     console.log($event.node);
     console.log($event.dragNode);
     const thing = this.things.find((thing: Thing) => thing._id === $event.dragNode?.key);
-    if (!$event.node?.isLeaf) {
-      this.nodes = this.makeNodes(this.things, this.categories);
-      return;
+    const category = this.categories.find((category: Category) => category._id === $event.dragNode?.key);
+    if (category) {
+      this.categoryService.updateCategory(category._id, {parent: $event.dragNode?.parentNode?.key}).pipe(take(1)).subscribe({
+        next: query => {
+          console.log('updated Thing');
+        },
+        error: error => {
+          console.error(error);
+        }
+      });
     }
-    console.log(thing)
     if(thing) {
-      this.thingService.updateThing(thing._id, {category: $event.node?.key}).pipe(take(1)).subscribe({
+      this.thingService.updateThing(thing._id, {category: $event.dragNode?.parentNode?.key ?? null}).pipe(take(1)).subscribe({
         next: query => {
           console.log('updated Thing');
         },
