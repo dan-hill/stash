@@ -163,27 +163,6 @@ export class ThingListComponent implements OnInit{
     this.uiStore.setThingListExpandedNodes($event.keys);
   }
 
-  createModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>, treeNode: TreeNodeInterface): void {
-      const thing: Thing = this.things.find((thing: Thing) => thing._id === treeNode.key) ?? new Thing();
-      if(thing._id === null) {
-        this.modalTitle = 'Create Thing';
-      } else {
-        this.modalTitle = 'Edit Thing';
-      }
-
-      this.createOrUpdateThingForm.setValue({
-        name: thing.name
-      });
-      this.modal.create({
-        nzTitle: tplTitle,
-        nzContent: tplContent,
-        nzFooter: tplFooter,
-        nzMaskClosable: false,
-        nzClosable: true,
-        nzOnOk: () => console.log('Click ok')
-      });
-  }
-
   createCreateThingModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>): void {
       this.modalTitle = 'Create Thing';
 
@@ -198,6 +177,23 @@ export class ThingListComponent implements OnInit{
         nzClosable: true,
         nzOnOk: () => console.log('Click ok')
       });
+  }
+
+  createEditThingModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>, node: Node): void {
+    const editingThing: Thing | undefined = this.things.find((thing: Thing) => thing._id === node.key);
+    if (!editingThing) return;
+
+    this.createOrUpdateThingForm.setValue({
+      name: editingThing.name
+    });
+    this.modal.create({
+      nzTitle: tplTitle,
+      nzContent: tplContent,
+      nzFooter: tplFooter,
+      nzMaskClosable: false,
+      nzClosable: true,
+      nzOnOk: () => console.log('Click ok')
+    });
   }
 
   createEditCategoryModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>, node: Node): void {
@@ -243,9 +239,11 @@ export class ThingListComponent implements OnInit{
   }
 
 
-  deleteThing(_id: string) {
+  deleteThing(_id: string, ref: NzModalRef | undefined = undefined) {
     this.thingService.deleteThing(_id).pipe(take(1)).subscribe({
       next: query => {
+        if(ref) this.destroyTplModal(ref);
+
       },
       error: error => {
         console.error(error);

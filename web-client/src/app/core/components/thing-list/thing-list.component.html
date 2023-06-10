@@ -49,7 +49,7 @@
       </nz-dropdown-menu>
       <nz-dropdown-menu #thingContextMenu="nzDropdownMenu">
         <ul nz-menu>
-          <li nz-menu-item (click)="selectDropdown()">Edit</li>
+          <li nz-menu-item (click)="createEditThingModal(editThingModalTitle, editThingModalContent, editThingModalFooter, node)">Edit</li>
           <li nz-menu-item (click)="deleteThing(node.key)">Delete</li>
         </ul>
       </nz-dropdown-menu>
@@ -90,6 +90,47 @@
           [loading] = "tplModalButtonLoading"
           (onClick)="updateCategory(node, ref)"/>
       </ng-template>
+
+
+      <ng-template #editThingModalTitle>Edit Thing</ng-template>
+
+      <ng-template #editThingModalContent let-params>
+
+        <form nz-form [formGroup]="createOrUpdateThingForm">
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="name">Name</nz-form-label>
+            <nz-form-control>
+              <input
+                nz-input
+                formControlName="name"
+                type="text" />
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+
+
+
+      </ng-template>
+
+      <ng-template #editThingModalFooter let-ref="modalRef">
+        <app-stash-button
+          style="float: left"
+          icon="delete"
+          nz-popconfirm
+          nzPopconfirmTitle="Sure to delete?"
+          (nzOnConfirm)="deleteThing(node, ref)"
+          [loading] = "tplModalButtonLoading"/>
+        <app-stash-button
+          content="cancel"
+          (onClick)="destroyTplModal(ref)"/>
+        <app-stash-button
+          icon="save"
+          content="save"
+          [loading] = "tplModalButtonLoading"
+          (onClick)="updateThing(node, ref)"/>
+      </ng-template>
+
+
 
     </ng-template>
   </div>
