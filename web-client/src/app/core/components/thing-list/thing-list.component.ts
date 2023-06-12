@@ -46,6 +46,7 @@ export class ThingListComponent implements OnInit{
   public tplModalButtonLoading: boolean = false;
   public modalTitle: string = "Create Thing";
   private activatedNode: NzTreeNode | undefined;
+  searchValue: any;
 
   constructor(
     private thingService: ThingsService,

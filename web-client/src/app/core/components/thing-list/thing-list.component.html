@@ -4,6 +4,7 @@
   </stash-header>
   <stash-header [title]="'things'">
     <app-stash-button
+      style="margin-right: 10px"
       icon="plus"
       content="thing"
       [size]="'small'"
@@ -18,7 +19,12 @@
   </stash-header>
 
   <div class="thing-list-container">
-
+    <nz-input-group [nzSuffix]="suffixIcon" style="width: 320px; margin-bottom: 10px">
+      <input type="text" nz-input placeholder="Search" [(ngModel)]="searchValue" />
+    </nz-input-group>
+    <ng-template #suffixIcon>
+      <span nz-icon nzType="search"></span>
+    </ng-template>
     <nz-tree
       nzDraggable
       (nzOnDrop)="onDrop($event)"
@@ -29,6 +35,7 @@
       (nzExpandChange)="onExpandChange($event)"
       [nzExpandedKeys]="expandedNodes"
       [nzTreeTemplate]="nzTreeTemplate"
+      [nzSearchValue]="searchValue"
     ></nz-tree>
     <ng-template #nzTreeTemplate draggable="node.isLeaf" let-node let-origin="origin">
       <span class="custom-node">
